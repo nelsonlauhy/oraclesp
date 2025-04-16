@@ -1,10 +1,12 @@
 const msalConfig = {
     auth: {
-        clientId: "31109757-b52b-4b7c-96c5-454490ad4c4e", // ✅ Your app’s client ID
-        authority: "https://login.microsoftonline.com/12551c0b-1ff7-4427-accf-80d5406276e0", // ✅ Your tenant ID
-        redirectUri: window.location.href
+      clientId: "31109757-b52b-4b7c-96c5-454490ad4c4e",
+      authority: "https://login.microsoftonline.com/12551c0b-1ff7-4427-accf-80d5406276e0",
+      redirectUri: window.location.href
     }
   };
+  
+  const siteId = "oraclegrouprealty.sharepoint.com,8b247071-c01e-4b83-958e-413d2e156b40,7892dd7a-2e84-4201-a4d4-dba0582d500e";
   
   const msalInstance = new msal.PublicClientApplication(msalConfig);
   
@@ -13,7 +15,7 @@ const msalConfig = {
   let currentFolderId = null;
   let breadcrumb = [];
   
-  // Runs when the page loads
+  // Run silent sign-in on page load
   window.onload = async () => {
     const currentAccounts = msalInstance.getAllAccounts();
     if (currentAccounts.length > 0) {
@@ -27,12 +29,12 @@ const msalConfig = {
         document.getElementById("librarySelect").disabled = false;
         loadLibraries();
       } catch (error) {
-        console.warn("Silent login failed:", error);
+        console.warn("Silent token acquisition failed", error);
       }
     }
   };
   
-  // Manual sign-in (button click)
+  // Manual login
   async function signIn() {
     try {
       const result = await msalInstance.loginPopup({
@@ -48,7 +50,7 @@ const msalConfig = {
     }
   }
   
-  // UI update after login
+  // Update UI after login
   function updateUIAfterLogin(account) {
     document.getElementById("signInBtn").style.display = "none";
     document.getElementById("welcomeMessage").style.display = "none";
@@ -56,9 +58,8 @@ const msalConfig = {
     document.getElementById("userStatus").textContent = `✅ Signed in as ${account.username}`;
   }
   
-  // Load document libraries from SharePoint site
+  // Load list of document libraries
   async function loadLibraries() {
-    const siteId = "oraclegrouprealty.sharepoint.com,8b247071-c01e-4b83-958e-413d2e156b40,7892dd7a-2e84-4201-a4d4-dba0582d500e";
     const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drives`, {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
@@ -66,6 +67,7 @@ const msalConfig = {
     const data = await res.json();
     const select = document.getElementById("librarySelect");
     select.innerHTML = "";
+  
     data.value.forEach(lib => {
       const option = document.createElement("option");
       option.value = lib.id;
@@ -80,7 +82,7 @@ const msalConfig = {
     });
   }
   
-  // Load files/folders within a drive or folder
+  // Load files and folders in a given location
   async function loadFiles(driveId, folderId = "root") {
     currentFolderId = folderId;
     showLoading();
@@ -96,11 +98,13 @@ const msalConfig = {
     updateBreadcrumb();
   
     data.value.forEach(item => {
+      const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
+      const nameHtml = item.folder ? `<strong>${item.name}</strong>` : item.name;
+  
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
-      a.innerHTML = `<span><i class="bi ${item.folder ? 'bi-folder' : 'bi-file-earmark'} me-2"></i><strong>${item.name}</strong></span>`;
-
-      
+      a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
+  
       if (item.folder) {
         a.href = "#";
         a.onclick = () => {
@@ -117,7 +121,7 @@ const msalConfig = {
     });
   }
   
-  // Update breadcrumb UI
+  // Update breadcrumb navigation
   function updateBreadcrumb() {
     const breadcrumbEl = document.getElementById("breadcrumb");
     breadcrumbEl.innerHTML = "";
@@ -143,7 +147,7 @@ const msalConfig = {
     });
   }
   
-  // Show loading spinner
+  // Loading spinner while fetching files
   function showLoading() {
     document.getElementById("fileList").innerHTML = `
       <div class="text-center py-3">
