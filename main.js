@@ -15,7 +15,6 @@ const msalConfig = {
   let currentFolderId = null;
   let breadcrumb = [];
   
-  // Run silent sign-in on page load
   window.onload = async () => {
     const currentAccounts = msalInstance.getAllAccounts();
     if (currentAccounts.length > 0) {
@@ -34,7 +33,6 @@ const msalConfig = {
     }
   };
   
-  // Manual login
   async function signIn() {
     try {
       const result = await msalInstance.loginPopup({
@@ -50,7 +48,6 @@ const msalConfig = {
     }
   }
   
-  // Update UI after login
   function updateUIAfterLogin(account) {
     document.getElementById("signInBtn").style.display = "none";
     document.getElementById("welcomeMessage").style.display = "none";
@@ -58,7 +55,6 @@ const msalConfig = {
     document.getElementById("userStatus").textContent = `✅ Signed in as ${account.username}`;
   }
   
-  // Load list of document libraries
   async function loadLibraries() {
     const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drives`, {
       headers: { Authorization: `Bearer ${accessToken}` }
@@ -82,7 +78,6 @@ const msalConfig = {
     });
   }
   
-  // Load files and folders in a given location
   async function loadFiles(driveId, folderId = "root") {
     currentFolderId = folderId;
     showLoading();
@@ -103,9 +98,9 @@ const msalConfig = {
   
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
-      a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
   
       if (item.folder) {
+        a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
         a.href = "#";
         a.onclick = () => {
           breadcrumb.push({ id: item.id, name: item.name });
@@ -113,6 +108,12 @@ const msalConfig = {
           return false;
         };
       } else {
+        a.innerHTML = `
+          <span>
+            <input type="checkbox" class="form-check-input me-2 file-check" data-url="${item.webUrl}">
+            <i class="bi ${icon} me-2"></i>${nameHtml}
+          </span>
+        `;
         a.href = item.webUrl;
         a.target = "_blank";
       }
@@ -121,7 +122,6 @@ const msalConfig = {
     });
   }
   
-  // Update breadcrumb navigation
   function updateBreadcrumb() {
     const breadcrumbEl = document.getElementById("breadcrumb");
     breadcrumbEl.innerHTML = "";
@@ -147,12 +147,35 @@ const msalConfig = {
     });
   }
   
-  // Loading spinner while fetching files
   function showLoading() {
     document.getElementById("fileList").innerHTML = `
       <div class="text-center py-3">
         <div class="spinner-border text-primary" role="status"></div>
       </div>
     `;
+  }
+  
+  function submitFiles() {
+    const checkboxes = document.querySelectorAll(".file-check:checked");
+    const modalBody = document.getElementById("modalBody");
+    modalBody.innerHTML = "";
+  
+    if (checkboxes.length === 0) {
+      modalBody.innerHTML = `<div class="text-muted">No files selected.</div>`;
+    } else {
+      const list = document.createElement("ul");
+      list.className = "list-group";
+      checkboxes.forEach(cb => {
+        const li = document.createElement("li");
+        li.className = "list-group-item";
+        const url = cb.getAttribute("data-url");
+        li.innerHTML = `<a href="${url}" target="_blank">${url}</a>`;
+        list.appendChild(li);
+      });
+      modalBody.appendChild(list);
+    }
+  
+    const fileModal = new bootstrap.Modal(document.getElementById("fileModal"));
+    fileModal.show();
   }
   
