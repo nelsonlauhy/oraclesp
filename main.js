@@ -98,7 +98,8 @@ const msalConfig = {
     data.value.forEach(item => {
       const a = document.createElement("a");
       a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
-      a.innerHTML = `<span><i class="bi ${item.folder ? 'bi-folder' : 'bi-file-earmark'} me-2"></i>${item.name}</span>`;
+      a.innerHTML = `<span><i class="bi ${item.folder ? 'bi-folder' : 'bi-file-earmark'} me-2"></i><strong>${item.name}</strong></span>`;
+
       
       if (item.folder) {
         a.href = "#";
