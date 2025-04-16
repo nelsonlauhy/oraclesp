@@ -11,9 +11,14 @@
     <div class="container my-5">
         <h2 class="mb-4">📂 SharePoint Document Library Browser</h2>
       
-        <div class="mb-3">
-          <button class="btn btn-primary" onclick="signIn()">🔐 Sign in</button>
-        </div>
+        <div id="welcomeMessage" class="alert alert-info">
+            🔒 Please sign in to access your SharePoint document libraries.
+          </div>
+          
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <button class="btn btn-primary" id="signInBtn" onclick="signIn()">🔐 Sign in</button>
+            <span id="userStatus" class="text-muted" style="display:none;"></span>
+          </div>
       
         <div class="mb-3">
           <label for="librarySelect" class="form-label">Select a Document Library</label>
