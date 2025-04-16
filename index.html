@@ -8,20 +8,29 @@
 </head>
 <body class="bg-light">
 
-<div class="container my-5">
-  <h2 class="mb-4">SharePoint Document Library Browser</h2>
-
-  <button class="btn btn-primary mb-3" onclick="signIn()">Sign in</button>
-
-  <div class="mb-3">
-    <label for="librarySelect" class="form-label">Select a Document Library</label>
-    <select class="form-select" id="librarySelect" disabled>
-      <option>Loading...</option>
-    </select>
-  </div>
-
-  <div id="fileList" class="list-group mt-4"></div>
-</div>
+    <div class="container my-5">
+        <h2 class="mb-4">📂 SharePoint Document Library Browser</h2>
+      
+        <div class="mb-3">
+          <button class="btn btn-primary" onclick="signIn()">🔐 Sign in</button>
+        </div>
+      
+        <div class="mb-3">
+          <label for="librarySelect" class="form-label">Select a Document Library</label>
+          <select class="form-select" id="librarySelect" disabled>
+            <option>Loading...</option>
+          </select>
+        </div>
+      
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb" id="breadcrumb"></ol>
+        </nav>
+      
+        <div id="fileList" class="list-group shadow-sm border rounded"></div>
+      </div>
+      
+      <!-- Bootstrap Icons -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
 <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
 <script src="main.js"></script>
