@@ -16,17 +16,23 @@
     .file-row {
       display: flex;
       align-items: center;
-      padding: 0.5rem 0;
+      padding: 0.25rem 0;
       border-bottom: none;
+      font-size: 0.9rem;
     }
     .file-name {
       flex: 1;
       text-align: left;
       overflow-wrap: anywhere;
-      padding-left: 1rem;
+      padding-left: 0.5rem;
     }
     .file-check {
-      margin-right: 0.75rem;
+      margin-right: 0.5rem;
+    }
+    .btn-sm.btn-outline-success {
+      padding: 0.1rem 0.4rem;
+      font-size: 0.75rem;
+      line-height: 1;
     }
   </style>
 </head>
@@ -69,7 +75,6 @@
 
     <div id="fileList" class="list-group shadow-sm my-3"></div>
 
-    
   </div>
 
   <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
