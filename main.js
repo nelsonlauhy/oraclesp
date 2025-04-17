@@ -117,13 +117,17 @@ async function loadFiles(driveId, folderId = "root") {
       };
     } else {
       a.innerHTML = `
-        <span>
-          <input type="checkbox" class="form-check-input me-2 file-check"
-                 data-id="${item.id}" data-drive="${driveId}"
-                 data-name="${item.name}" data-size="${item.size || 0}">
-          <i class="bi ${icon} me-2"></i>${nameHtml}<span class="float-end">${fileSizeMB}</span>
-        </span>
+        <div class="file-row">
+          <div class="file-name">
+            <input type="checkbox" class="form-check-input file-check me-2"
+                  data-id="${item.id}" data-drive="${driveId}"
+                  data-name="${item.name}" data-size="${item.size || 0}">
+            <i class="bi ${icon} me-2"></i>${item.name}
+          </div>
+          <div class="file-size">${(item.size / (1024 * 1024)).toFixed(2)} MB</div>
+        </div>
       `;
+    
       a.href = item.webUrl;
       a.target = "_blank";
     }
