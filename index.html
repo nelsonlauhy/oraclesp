@@ -44,20 +44,25 @@
 }
   </style>
 </head>
-<body class="bg-light">
+<body class="bg-white">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top">
+    <div class="container-fluid px-4">
+      <span class="navbar-brand fw-semibold">📂 SharePoint Document Library Browser</span>
+      <div class="d-flex">
+        <span id="userStatus" class="navbar-text me-3 text-muted" style="display: none;"></span>
+        <button class="btn btn-primary" id="signInBtn" onclick="signIn()">🔐 Sign in</button>
+      </div>
+    </div>
+  </nav>
 
   <div class="container-fluid px-4 py-4">
     <div class="sticky-top bg-white pb-3 z-3">
-      <h2 class="mb-4">📂 SharePoint Document Library Browser</h2>
-
       <div id="welcomeMessage" class="alert alert-info">
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
 
-      <div class="mb-3 d-flex justify-content-between align-items-center">
-        <button class="btn btn-primary" id="signInBtn" onclick="signIn()">🔐 Sign in</button>
-        <span id="userStatus" class="text-muted" style="display:none;"></span>
-      </div>
+      
 
       <div class="mb-3">
         <label for="librarySelect" class="form-label">Select a Document Library</label>
