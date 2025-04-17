@@ -64,7 +64,9 @@ async function loadLibraries() {
   const select = document.getElementById("librarySelect");
   select.innerHTML = "";
 
+  // Sort the libraries alphabetically by name
   const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
+
   sortedLibraries.forEach(lib => {
     const option = document.createElement("option");
     option.value = lib.id;
@@ -72,13 +74,18 @@ async function loadLibraries() {
     select.appendChild(option);
   });
 
-  // Automatically trigger change for first valid library
-  if (select.options.length > 0) {
-    select.selectedIndex = 0;
+  select.addEventListener("change", () => {
+    currentDriveId = select.value;
+    breadcrumb = [];
+    loadFiles(currentDriveId);
+  });
+
+  // Automatically trigger change for the first library (skip default option)
+  if (select.options.length > 1) {
+    select.selectedIndex = 1; // Index 0 is "Please select Document Library"
     select.dispatchEvent(new Event('change'));
   }
 }
-
 
 async function loadFiles(driveId, folderId = "root") {
   currentFolderId = folderId;
