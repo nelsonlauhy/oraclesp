@@ -114,7 +114,7 @@ async function loadFiles(driveId, folderId = "root") {
           <input type="checkbox" class="form-check-input me-2 file-check"
                  data-id="${item.id}" data-drive="${driveId}"
                  data-name="${item.name}" data-size="${item.size || 0}">
-          <i class="bi ${icon} me-2"></i>${nameHtml}${fileSizeMB}
+          <i class="bi ${icon} me-2"></i>${nameHtml}<span class="float-end">${fileSizeMB}</span>
         </span>
       `;
       a.href = item.webUrl;
@@ -184,8 +184,8 @@ async function submitFiles() {
       totalSize += size;
 
       const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = `${name} - ${(size / (1024 * 1024)).toFixed(2)} MB`;
+      li.className = "list-group-item d-flex justify-content-between";
+      li.innerHTML = `<span>${name}</span><span>${(size / (1024 * 1024)).toFixed(2)} MB</span>`;
       list.appendChild(li);
     });
 
@@ -206,6 +206,8 @@ async function submitFiles() {
 async function createDraftEmailWithAttachments() {
   const modalBody = document.getElementById("modalBody");
   const createBtn = document.getElementById("createEmailBtn");
+  const cancelBtn = document.querySelector("#fileModal .btn-secondary");
+
   createBtn.disabled = true;
   modalBody.innerHTML += `<div class="text-info mt-3">📥 Downloading files and creating draft email...</div>`;
 
@@ -248,12 +250,13 @@ async function createDraftEmailWithAttachments() {
     }
 
     modalBody.innerHTML += `<div class="text-success mt-3">✅ Draft email with attachments created.<br><a href="https://outlook.office365.com/mail/drafts" target="_blank">Open Drafts</a></div>`;
+    cancelBtn.textContent = "Close";
+    createBtn.disabled = true;
   } catch (error) {
     console.error("Error creating draft email:", error);
     modalBody.innerHTML += `<div class="text-danger mt-3">❌ Failed to create draft email.</div>`;
+    createBtn.disabled = false;
   }
-
-  createBtn.disabled = false;
 }
 
 async function downloadFileAsBase64(driveId, itemId) {
