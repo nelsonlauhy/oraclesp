@@ -67,22 +67,25 @@
 
       
 
-      <div class="mb-3">
+      <div class="mb-2">
         <label for="librarySelect" class="form-label">Select a Document Library</label>
         <select class="form-select" id="librarySelect" disabled>
           <option selected disabled>Please select Document Library</option>
         </select>
       </div>
 
-      <nav aria-label="breadcrumb">
-        <ol class="breadcrumb" id="breadcrumb"></ol>
-      </nav>
-
-      <div class="mt-4 d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center justify-content-between mb-2">
   <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
   <div class="flex-grow-1">
     <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
   </div>
+  <div class="ms-3">
+    <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
+  </div>
+</div>
+<nav aria-label="breadcrumb" class="mb-2">
+  <ol class="breadcrumb" id="breadcrumb"></ol>
+</nav>
   <div class="ms-3">
     <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
   </div>
@@ -92,7 +95,7 @@
       </div>
     </div>
 
-    <div id="fileList" class="list-group shadow-sm my-3"></div>
+    <div id="fileList" class="list-group shadow-sm mt-2"></div>
 
   </div>
 
