@@ -54,27 +54,30 @@ function updateUIAfterLogin(account) {
 }
 
 async function loadSites() {
+  const siteSelect = document.getElementById("siteSelect");
+  siteSelect.innerHTML = '<option selected disabled>Loading...</option>';
+  siteSelect.disabled = false;
+
   const res = await fetch("https://graph.microsoft.com/v1.0/sites?search=*", {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
 
   const data = await res.json();
-  const select = document.getElementById("siteSelect");
-  select.innerHTML = '<option selected disabled>Please select SharePoint Site</option>';
-  select.disabled = false;
 
+  siteSelect.innerHTML = '<option selected disabled>Select a SharePoint Site</option>';
   data.value.forEach(site => {
     const option = document.createElement("option");
     option.value = `${site.hostname},${site.id}`;
     option.textContent = site.name || site.webUrl;
-    select.appendChild(option);
+    siteSelect.appendChild(option);
   });
 
-  select.addEventListener("change", () => {
-    const [hostname, id] = select.value.split(",");
+  siteSelect.onchange = () => {
+    const [hostname, id] = siteSelect.value.split(",");
     currentSiteId = `${hostname},${id}`;
+    console.log("Selected site:", currentSiteId);
     loadLibraries();
-  });
+  };
 }
 
 async function loadLibraries() {
@@ -84,7 +87,7 @@ async function loadLibraries() {
 
   const data = await res.json();
   const select = document.getElementById("librarySelect");
-  select.innerHTML = "";
+  select.innerHTML = '<option selected disabled>Select a Document Library</option>';
   select.disabled = false;
 
   const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
@@ -96,16 +99,11 @@ async function loadLibraries() {
     select.appendChild(option);
   });
 
-  select.addEventListener("change", () => {
+  select.onchange = () => {
     currentDriveId = select.value;
     breadcrumb = [];
     loadFiles(currentDriveId);
-  });
-
-  if (select.options.length > 1) {
-    select.selectedIndex = 1;
-    select.dispatchEvent(new Event('change'));
-  }
+  };
 }
 
 async function loadFiles(driveId, folderId = "root") {
