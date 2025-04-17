@@ -186,32 +186,38 @@ function showLoading() {
 }
 
 async function submitFiles() {
-  const modalBody = document.getElementById("modalBody");
+  const modalFileList = document.getElementById("modalFileList");
+  const modalTotalSize = document.getElementById("modalTotalSize");
   const createBtn = document.getElementById("createEmailBtn");
 
-  modalBody.innerHTML = "";
+  modalFileList.innerHTML = "";
+  modalTotalSize.innerHTML = "";
 
   if (selectedFileItems.length === 0) {
-    modalBody.innerHTML = `<div class="text-muted">No files selected.</div>`;
+    modalFileList.innerHTML = `<li class="list-group-item text-muted">No files selected.</li>`;
     createBtn.disabled = true;
   } else {
-    const list = document.createElement("ul");
-    list.className = "list-group";
+    let totalSize = 0;
 
     selectedFileItems.forEach(file => {
       const li = document.createElement("li");
-      li.className = "list-group-item";
-      li.textContent = file.name;
-      list.appendChild(li);
+      li.className = "list-group-item d-flex justify-content-between align-items-center";
+
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      li.innerHTML = `<span>${file.name}</span><span class="text-muted">${sizeMB} MB</span>`;
+
+      modalFileList.appendChild(li);
+      totalSize += file.size;
     });
 
-    modalBody.appendChild(list);
+    modalTotalSize.textContent = `📦 Total Size: ${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
     createBtn.disabled = false;
   }
 
   const fileModal = new bootstrap.Modal(document.getElementById("fileModal"));
   fileModal.show();
 }
+
 
 async function createDraftEmailWithAttachments() {
   const modalBody = document.getElementById("modalBody");
