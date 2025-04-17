@@ -143,7 +143,7 @@ async function loadFiles(driveId, folderId = "root") {
             <i class="bi ${icon} me-2"></i>${item.name}
           </div>
           <div class="file-action">
-            <button class="btn btn-sm btn-outline-success" onclick="event.preventDefault(); addFileToSelection($1)">
+            <button class="btn btn-sm btn-outline-success" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})">
               <i class="bi bi-plus-lg"></i>
             </button>
           </div>
