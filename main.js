@@ -318,3 +318,18 @@ async function downloadFileAsBase64(driveId, itemId) {
     reader.readAsDataURL(blob);
   });
 }
+
+async function onSiteSelected() {
+  const select = document.getElementById("siteSelect");
+  const selectedValue = select.value;
+
+  if (!selectedValue) return;
+
+  try {
+    siteId = selectedValue;
+    await loadLibraries(); // refresh the document libraries for selected site
+  } catch (error) {
+    console.error("Failed to load site:", error);
+    alert("🚫 You do not have permission to access this site.");
+  }
+}

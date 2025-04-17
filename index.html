@@ -69,9 +69,13 @@
 
       <!-- New Site Selector -->
       <div class="mb-2">
-        <label for="siteSelect" class="form-label">Select a SharePoint Site</label>
-        <select class="form-select" id="siteSelect" disabled>
-          <option selected disabled>Please select SharePoint Site</option>
+        <label for="siteSelect" class="form-label">Select SharePoint Site</label>
+        <select class="form-select" id="siteSelect" onchange="onSiteSelected()">
+          <option selected disabled>Choose a site</option>
+          <option value="oraclegrouprealty.sharepoint.com,8b247071-c01e-4b83-958e-413d2e156b40,7892dd7a-2e84-4201-a4d4-dba0582d500e">IT Site</option>
+          <option value="oraclegrouprealty.sharepoint.com,85a6137d-153d-4b6f-af62-c1422c731d5e,1862e1c1-a74b-4b96-88c2-db0e9f7083d6">Central District</option>
+          <option value="oraclegrouprealty.sharepoint.com,a33538c6-96cb-424e-a76b-2ca03a468bf7,bcbd6416-9850-4591-b4fe-17d270aaa6b1">South Coast</option>
+          <option value="oraclegrouprealty.sharepoint.com,14a792a5-2eaf-445e-a8e1-1543b0d37a27,1862e1c1-a74b-4b96-88c2-db0e9f7083d6">Project Site 01 - VCity</option>
         </select>
       </div>
 
