@@ -9,8 +9,10 @@
   <style>
     .file-row {
       display: flex;
+      align-items: center;
       justify-content: space-between;
-      width: 100%;
+      padding: 0.5rem 1rem;
+      border-bottom: 1px solid #ddd;
     }
     .file-name {
       flex: 1;
@@ -18,9 +20,12 @@
       overflow-wrap: anywhere;
     }
     .file-size {
+      width: 100px;
       text-align: right;
       white-space: nowrap;
-      margin-left: 1rem;
+    }
+    .file-check {
+      margin-right: 0.75rem;
     }
   </style>
 </head>
