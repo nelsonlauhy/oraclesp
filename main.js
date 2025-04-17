@@ -25,6 +25,8 @@ window.onload = async () => {
       });
       accessToken = result.accessToken;
       updateUIAfterLogin(currentAccounts[0]);
+
+      // Activate dropdown after login
       document.getElementById("siteSelect").onchange = () => {
         currentSiteId = document.getElementById("siteSelect").value;
         loadLibraries();
@@ -43,6 +45,8 @@ async function signIn() {
 
     accessToken = result.accessToken;
     updateUIAfterLogin(result.account);
+
+    // Activate dropdown after login
     document.getElementById("siteSelect").onchange = () => {
       currentSiteId = document.getElementById("siteSelect").value;
       loadLibraries();
@@ -60,101 +64,112 @@ function updateUIAfterLogin(account) {
 }
 
 async function loadLibraries() {
+  const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${currentSiteId}/drives`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  const data = await res.json();
   const select = document.getElementById("librarySelect");
-  select.innerHTML = "";
-  select.disabled = true;
-  clearFileList();
+  select.innerHTML = '<option selected disabled>Select a Document Library</option>';
+  select.disabled = false;
 
-  try {
-    const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${currentSiteId}/drives`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+  const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
+  sortedLibraries.forEach(lib => {
+    const option = document.createElement("option");
+    option.value = lib.id;
+    option.textContent = lib.name;
+    select.appendChild(option);
+  });
 
-    if (!res.ok) throw new Error(`Error loading libraries: ${res.status}`);
-
-    const data = await res.json();
-    const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
-
-    select.innerHTML = '<option selected disabled>Select a Document Library</option>';
-    sortedLibraries.forEach(lib => {
-      const option = document.createElement("option");
-      option.value = lib.id;
-      option.textContent = lib.name;
-      select.appendChild(option);
-    });
-
-    select.disabled = false;
-
-    if (select.options.length > 1) {
-      select.selectedIndex = 1;
-      select.dispatchEvent(new Event("change"));
-    }
-  } catch (err) {
-    console.error("loadLibraries() failed:", err);
-    alert("⚠️ You don't have permission to access this site or its libraries.");
-    select.innerHTML = '<option selected disabled>No accessible libraries</option>';
-    clearFileList();
+  select.onchange = () => {
+    currentDriveId = select.value;
+    breadcrumb = [];
+    loadFiles(currentDriveId);
+  };
+  
+  // ✅ Auto-select the first available library and load it
+  if (select.options.length > 1) {
+    select.selectedIndex = 1;
+    select.dispatchEvent(new Event("change"));
   }
+  
 }
 
 async function loadFiles(driveId, folderId = "root") {
   currentFolderId = folderId;
   showLoading();
 
-  try {
-    const res = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${folderId}/children`, {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+  const res = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${folderId}/children`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
 
-    if (!res.ok) throw new Error(`Error loading files: ${res.status}`);
+  const data = await res.json();
+  const list = document.getElementById("fileList");
+  list.innerHTML = "";
 
-    const data = await res.json();
-    const list = document.getElementById("fileList");
-    list.innerHTML = "";
-    updateBreadcrumb();
+  updateBreadcrumb();
 
-    data.value.forEach(item => {
-      const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
-      const a = document.createElement("a");
-      a.className = "list-group-item list-group-item-action border-0";
+  data.value.forEach(item => {
+    const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
+    const a = document.createElement("a");
+    a.className = "list-group-item list-group-item-action border-0";
 
-      if (item.folder) {
-        a.innerHTML = `<div class="file-row"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
-        a.href = "#";
-        a.onclick = () => {
-          breadcrumb.push({ id: item.id, name: item.name });
-          loadFiles(driveId, item.id);
-          return false;
-        };
-      } else {
-        a.innerHTML = `
-          <div class="file-row">
-            <div class="file-name">
-              <button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button>
-              <i class="bi ${icon} me-2"></i>${item.name}
-            </div>
+    if (item.folder) {
+      a.innerHTML = `<div class="file-row"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
+      a.href = "#";
+      a.onclick = () => {
+        breadcrumb.push({ id: item.id, name: item.name });
+        loadFiles(driveId, item.id);
+        return false;
+      };
+    } else {
+      a.innerHTML = `
+        <div class="file-row">
+          <div class="file-name">
+            <button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button>
+            <i class="bi ${icon} me-2"></i>${item.name}
           </div>
-        `;
-        a.href = item.webUrl;
-        a.target = "_blank";
-      }
+        </div>
+      `;
+      a.href = item.webUrl;
+      a.target = "_blank";
+    }
 
-      list.appendChild(a);
-    });
-  } catch (err) {
-    console.error("loadFiles() failed:", err);
-    alert("⚠️ Unable to load files. You may not have permission.");
-    clearFileList();
-  }
+    list.appendChild(a);
+  });
 }
 
-function clearFileList() {
+function updateBreadcrumb() {
+  const breadcrumbEl = document.getElementById("breadcrumb");
+  breadcrumbEl.innerHTML = "";
+
+  const rootCrumb = document.createElement("li");
+  rootCrumb.className = "breadcrumb-item";
+  rootCrumb.innerHTML = `<a href="#">Root</a>`;
+  rootCrumb.onclick = () => {
+    breadcrumb = [];
+    loadFiles(currentDriveId);
+  };
+  breadcrumbEl.appendChild(rootCrumb);
+
+  breadcrumb.forEach((crumb, index) => {
+    const li = document.createElement("li");
+    li.className = "breadcrumb-item";
+    li.innerHTML = `<a href="#">${crumb.name}</a>`;
+    li.onclick = () => {
+      breadcrumb = breadcrumb.slice(0, index + 1);
+      loadFiles(currentDriveId, crumb.id);
+    };
+    breadcrumbEl.appendChild(li);
+  });
+}
+
+function showLoading() {
   document.getElementById("fileList").innerHTML = `
-    <div class="text-muted p-3 border bg-light rounded">
-      📍 No files available or permission denied.
+    <div class="text-center py-3">
+      <div class="spinner-border text-primary" role="status"></div>
     </div>
   `;
-  document.getElementById("breadcrumb").innerHTML = "";
 }
 
 function addFileToSelection(itemId, driveId, name, size) {
@@ -278,6 +293,7 @@ async function downloadFileAsBase64(driveId, itemId) {
   const response = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/content`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
+
   const blob = await response.blob();
 
   return await new Promise((resolve, reject) => {
