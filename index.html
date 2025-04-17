@@ -10,7 +10,6 @@
     .file-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       padding: 0.5rem 1rem;
       border-bottom: 1px solid #ddd;
     }
@@ -18,11 +17,6 @@
       flex: 1;
       text-align: left;
       overflow-wrap: anywhere;
-    }
-    .file-size {
-      width: 100px;
-      text-align: right;
-      white-space: nowrap;
     }
     .file-check {
       margin-right: 0.75rem;
@@ -54,13 +48,7 @@
       <ol class="breadcrumb" id="breadcrumb"></ol>
     </nav>
 
-    <div class="list-group shadow-sm border rounded">
-  <div class="file-row fw-bold bg-light border-bottom px-3 py-2">
-    <div class="file-name">File Name</div>
-    <div class="file-size">Size</div>
-  </div>
-  <div id="fileList"></div>
-</div>
+    <div id="fileList" class="list-group shadow-sm border rounded"></div>
 
     <div class="text-end mt-3">
       <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
