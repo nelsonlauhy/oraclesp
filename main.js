@@ -126,7 +126,7 @@ async function loadFiles(driveId, folderId = "root") {
   data.value.forEach(item => {
     const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
     const a = document.createElement("a");
-    a.className = "list-group-item list-group-item-action";
+    a.className = "list-group-item list-group-item-action border-0";
 
     if (item.folder) {
       a.innerHTML = `<div class="file-row" style="border-bottom: none;"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
