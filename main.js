@@ -107,11 +107,8 @@ async function loadFiles(driveId, folderId = "root") {
     const a = document.createElement("a");
     a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
 
-    // Only update inside loadFiles() when rendering a file
-    // Replace the content inside the if (!item.folder) block in loadFiles()
-
     if (item.folder) {
-      a.innerHTML = `<span><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></span>`;
+      a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
       a.href = "#";
       a.onclick = () => {
         breadcrumb.push({ id: item.id, name: item.name });
@@ -119,22 +116,14 @@ async function loadFiles(driveId, folderId = "root") {
         return false;
       };
     } else {
-      const fileSizeMB = item.size ? (item.size / (1024 * 1024)).toFixed(2) : "0.00";
       a.innerHTML = `
-        <div class="file-row">
-          <div class="file-name">
-            <input type="checkbox" class="form-check-input file-check me-2"
-                  data-id="${item.id}" data-drive="${driveId}"
-                  data-name="${item.name}" data-size="${item.size || 0}">
-            <i class="bi ${icon} me-2"></i>${item.name}
-          </div>
-          <div class="file-size">${fileSizeMB} MB</div>
-        </div>
+        <span>
+          <input type="checkbox" class="form-check-input me-2 file-check"
+                 data-id="${item.id}" data-drive="${driveId}"
+                 data-name="${item.name}" data-size="${item.size || 0}">
+          <i class="bi ${icon} me-2"></i>${nameHtml}<span class="float-end">${fileSizeMB}</span>
+        </span>
       `;
-      a.href = item.webUrl;
-      a.target = "_blank";
-    }
-    
       a.href = item.webUrl;
       a.target = "_blank";
     }
