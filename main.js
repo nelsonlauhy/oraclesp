@@ -6,10 +6,10 @@ const msalConfig = {
   }
 };
 
-const siteId = "oraclegrouprealty.sharepoint.com,8b247071-c01e-4b83-958e-413d2e156b40,7892dd7a-2e84-4201-a4d4-dba0582d500e";
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 let accessToken = null;
+let currentSiteId = null;
 let currentDriveId = null;
 let currentFolderId = null;
 let breadcrumb = [];
@@ -25,8 +25,7 @@ window.onload = async () => {
       });
       accessToken = result.accessToken;
       updateUIAfterLogin(currentAccounts[0]);
-      document.getElementById("librarySelect").disabled = false;
-      loadLibraries();
+      await loadSites();
     } catch (error) {
       console.warn("Silent token acquisition failed", error);
     }
@@ -41,8 +40,7 @@ async function signIn() {
 
     accessToken = result.accessToken;
     updateUIAfterLogin(result.account);
-    document.getElementById("librarySelect").disabled = false;
-    loadLibraries();
+    await loadSites();
   } catch (err) {
     console.error("Login failed", err);
   }
@@ -55,14 +53,39 @@ function updateUIAfterLogin(account) {
   document.getElementById("userStatus").textContent = `✅ Signed in as ${account.username}`;
 }
 
+async function loadSites() {
+  const res = await fetch("https://graph.microsoft.com/v1.0/sites?search=*", {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  });
+
+  const data = await res.json();
+  const select = document.getElementById("siteSelect");
+  select.innerHTML = '<option selected disabled>Please select SharePoint Site</option>';
+  select.disabled = false;
+
+  data.value.forEach(site => {
+    const option = document.createElement("option");
+    option.value = `${site.hostname},${site.id}`;
+    option.textContent = site.name || site.webUrl;
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", () => {
+    const [hostname, id] = select.value.split(",");
+    currentSiteId = `${hostname},${id}`;
+    loadLibraries();
+  });
+}
+
 async function loadLibraries() {
-  const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${siteId}/drives`, {
+  const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${currentSiteId}/drives`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
 
   const data = await res.json();
   const select = document.getElementById("librarySelect");
   select.innerHTML = "";
+  select.disabled = false;
 
   const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -85,30 +108,6 @@ async function loadLibraries() {
   }
 }
 
-function updateSelectedTags() {
-  const tagBox = document.getElementById("selectedTags");
-  tagBox.innerHTML = "";
-  selectedFileItems.forEach(file => {
-    const span = document.createElement("span");
-    span.className = "badge bg-primary d-flex align-items-center";
-    span.innerHTML = `${file.name} <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Remove" onclick="removeFileFromSelection('${file.itemId}')"></button>`;
-    tagBox.appendChild(span);
-  });
-}
-
-function addFileToSelection(itemId, driveId, name, size) {
-  const exists = selectedFileItems.some(f => f.itemId === itemId);
-  if (!exists) {
-    selectedFileItems.push({ driveId, itemId, name, size });
-    updateSelectedTags();
-  }
-}
-
-function removeFileFromSelection(itemId) {
-  selectedFileItems = selectedFileItems.filter(f => f.itemId !== itemId);
-  updateSelectedTags();
-}
-
 async function loadFiles(driveId, folderId = "root") {
   currentFolderId = folderId;
   showLoading();
@@ -129,7 +128,7 @@ async function loadFiles(driveId, folderId = "root") {
     a.className = "list-group-item list-group-item-action border-0";
 
     if (item.folder) {
-      a.innerHTML = `<div class="file-row" style="border-bottom: none;"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
+      a.innerHTML = `<div class="file-row"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
       a.href = "#";
       a.onclick = () => {
         breadcrumb.push({ id: item.id, name: item.name });
@@ -139,9 +138,7 @@ async function loadFiles(driveId, folderId = "root") {
     } else {
       a.innerHTML = `
         <div class="file-row">
-          <div class="file-name"><button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button><i class="bi ${icon} me-2"></i>${item.name}
-          </div>
-          
+          <div class="file-name"><button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button><i class="bi ${icon} me-2"></i>${item.name}</div>
         </div>
       `;
       a.href = item.webUrl;
@@ -185,6 +182,30 @@ function showLoading() {
   `;
 }
 
+function addFileToSelection(itemId, driveId, name, size) {
+  const exists = selectedFileItems.some(f => f.itemId === itemId);
+  if (!exists) {
+    selectedFileItems.push({ driveId, itemId, name, size });
+    updateSelectedTags();
+  }
+}
+
+function removeFileFromSelection(itemId) {
+  selectedFileItems = selectedFileItems.filter(f => f.itemId !== itemId);
+  updateSelectedTags();
+}
+
+function updateSelectedTags() {
+  const tagBox = document.getElementById("selectedTags");
+  tagBox.innerHTML = "";
+  selectedFileItems.forEach(file => {
+    const span = document.createElement("span");
+    span.className = "badge bg-primary d-flex align-items-center";
+    span.innerHTML = `${file.name} <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Remove" onclick="removeFileFromSelection('${file.itemId}')"></button>`;
+    tagBox.appendChild(span);
+  });
+}
+
 async function submitFiles() {
   const modalFileList = document.getElementById("modalFileList");
   const modalTotalSize = document.getElementById("modalTotalSize");
@@ -224,8 +245,6 @@ async function submitFiles() {
   const fileModal = new bootstrap.Modal(document.getElementById("fileModal"));
   fileModal.show();
 }
-
-
 
 async function createDraftEmailWithAttachments() {
   const modalBody = document.getElementById("modalBody");
@@ -275,7 +294,6 @@ async function createDraftEmailWithAttachments() {
 
     modalBody.innerHTML += `<div class="text-success mt-3">✅ Draft email with attachments created.<br><a href="https://outlook.office365.com/mail/drafts" target="_blank">Open Drafts</a></div>`;
     cancelBtn.textContent = "Close";
-    createBtn.disabled = true;
   } catch (error) {
     console.error("Error creating draft email:", error);
     modalBody.innerHTML += `<div class="text-danger mt-3">❌ Failed to create draft email.</div>`;
