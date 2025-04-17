@@ -64,7 +64,6 @@ async function loadLibraries() {
   const select = document.getElementById("librarySelect");
   select.innerHTML = "";
 
-  // Sort the libraries alphabetically by name
   const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
 
   sortedLibraries.forEach(lib => {
@@ -80,11 +79,34 @@ async function loadLibraries() {
     loadFiles(currentDriveId);
   });
 
-  // Automatically trigger change for the first library (skip default option)
   if (select.options.length > 1) {
-    select.selectedIndex = 1; // Index 0 is "Please select Document Library"
+    select.selectedIndex = 1;
     select.dispatchEvent(new Event('change'));
   }
+}
+
+function updateSelectedTags() {
+  const tagBox = document.getElementById("selectedTags");
+  tagBox.innerHTML = "";
+  selectedFileItems.forEach(file => {
+    const span = document.createElement("span");
+    span.className = "badge bg-primary d-flex align-items-center";
+    span.innerHTML = `${file.name} <button type="button" class="btn-close btn-close-white btn-sm ms-2" aria-label="Remove" onclick="removeFileFromSelection('${file.itemId}')"></button>`;
+    tagBox.appendChild(span);
+  });
+}
+
+function addFileToSelection(itemId, driveId, name, size) {
+  const exists = selectedFileItems.some(f => f.itemId === itemId);
+  if (!exists) {
+    selectedFileItems.push({ driveId, itemId, name, size });
+    updateSelectedTags();
+  }
+}
+
+function removeFileFromSelection(itemId) {
+  selectedFileItems = selectedFileItems.filter(f => f.itemId !== itemId);
+  updateSelectedTags();
 }
 
 async function loadFiles(driveId, folderId = "root") {
@@ -103,14 +125,11 @@ async function loadFiles(driveId, folderId = "root") {
 
   data.value.forEach(item => {
     const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
-    const nameHtml = item.folder ? `<strong>${item.name}</strong>` : item.name;
-    //const fileSizeMB = item.size ? ` (${(item.size / (1024 * 1024)).toFixed(2)} MB)` : "";
-
     const a = document.createElement("a");
-    a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
+    a.className = "list-group-item list-group-item-action";
 
     if (item.folder) {
-      a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
+      a.innerHTML = `<div class="file-row"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
       a.href = "#";
       a.onclick = () => {
         breadcrumb.push({ id: item.id, name: item.name });
@@ -119,14 +138,16 @@ async function loadFiles(driveId, folderId = "root") {
       };
     } else {
       a.innerHTML = `
-        <span>
-          <input type="checkbox" class="form-check-input me-2 file-check"
-                 data-id="${item.id}" data-drive="${driveId}"
-                 data-name="${item.name}" data-size="${item.size || 0}">
-
-          <i class="bi ${icon} me-2"></i>${nameHtml}
-
-        </span>
+        <div class="file-row">
+          <div class="file-name">
+            <i class="bi ${icon} me-2"></i>${item.name}
+          </div>
+          <div class="file-action">
+            <button class="btn btn-sm btn-outline-success" onclick="addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+        </div>
       `;
       a.href = item.webUrl;
       a.target = "_blank";
@@ -170,43 +191,26 @@ function showLoading() {
 }
 
 async function submitFiles() {
-  const checkboxes = document.querySelectorAll(".file-check:checked");
   const modalBody = document.getElementById("modalBody");
   const createBtn = document.getElementById("createEmailBtn");
 
   modalBody.innerHTML = "";
-  selectedFileItems = [];
 
-  if (checkboxes.length === 0) {
+  if (selectedFileItems.length === 0) {
     modalBody.innerHTML = `<div class="text-muted">No files selected.</div>`;
     createBtn.disabled = true;
   } else {
     const list = document.createElement("ul");
     list.className = "list-group";
-    let totalSize = 0;
 
-    checkboxes.forEach(cb => {
-      const driveId = cb.getAttribute("data-drive");
-      const itemId = cb.getAttribute("data-id");
-      const name = cb.getAttribute("data-name");
-      const size = parseInt(cb.getAttribute("data-size") || "0");
-
-      selectedFileItems.push({ driveId, itemId, name, size });
-      totalSize += size;
-
+    selectedFileItems.forEach(file => {
       const li = document.createElement("li");
-      li.className = "list-group-item d-flex justify-content-between";
-      li.innerHTML = `<span>${name}</span><span>${(size / (1024 * 1024)).toFixed(2)} MB</span>`;
+      li.className = "list-group-item";
+      li.textContent = file.name;
       list.appendChild(li);
     });
 
     modalBody.appendChild(list);
-
-    const totalInfo = document.createElement("div");
-    totalInfo.className = "mt-3 fw-bold";
-    totalInfo.innerHTML = `📦 Total Size: ${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
-    modalBody.appendChild(totalInfo);
-
     createBtn.disabled = false;
   }
 

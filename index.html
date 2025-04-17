@@ -18,6 +18,9 @@
       text-align: left;
       overflow-wrap: anywhere;
     }
+    .file-action {
+      flex-shrink: 0;
+    }
     .file-check {
       margin-right: 0.75rem;
     }
@@ -49,6 +52,11 @@
     </nav>
 
     <div id="fileList" class="list-group shadow-sm border rounded"></div>
+
+    <div class="mt-4">
+      <label class="form-label">Selected Files</label>
+      <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
+    </div>
 
     <div class="text-end mt-3">
       <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
