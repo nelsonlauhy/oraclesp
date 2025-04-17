@@ -65,6 +65,8 @@
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
 
+      
+
       <div class="mb-2">
         <label for="librarySelect" class="form-label">Select a Document Library</label>
         <select class="form-select" id="librarySelect" disabled>
@@ -73,16 +75,12 @@
       </div>
 
       <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
-        <div class="flex-grow-1">
-          <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
-        </div>
-        <div class="ms-3">
-          <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
-        </div>
-      </div>
-      
-<nav aria-label="breadcrumb" class="mb-2">
+  <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
+  <div class="flex-grow-1">
+    <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
+  </div>
+  </div>
+<nav aria-label="breadcrumb" class="mb-1">
   <ol class="breadcrumb" id="breadcrumb"></ol>
 </nav>
   
@@ -92,7 +90,7 @@
       </div>
     </div>
 
-    <div id="fileList" class="list-group shadow-sm mt-2"></div>
+    <div id="fileList" class="list-group shadow-sm mt-1"></div>
 
   </div>
 
