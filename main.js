@@ -107,8 +107,11 @@ async function loadFiles(driveId, folderId = "root") {
     const a = document.createElement("a");
     a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
 
+    // Only update inside loadFiles() when rendering a file
+    // Replace the content inside the if (!item.folder) block in loadFiles()
+
     if (item.folder) {
-      a.innerHTML = `<span><i class="bi ${icon} me-2"></i>${nameHtml}</span>`;
+      a.innerHTML = `<span><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></span>`;
       a.href = "#";
       a.onclick = () => {
         breadcrumb.push({ id: item.id, name: item.name });
@@ -116,6 +119,7 @@ async function loadFiles(driveId, folderId = "root") {
         return false;
       };
     } else {
+      const fileSizeMB = item.size ? (item.size / (1024 * 1024)).toFixed(2) : "0.00";
       a.innerHTML = `
         <div class="file-row">
           <div class="file-name">
@@ -124,9 +128,12 @@ async function loadFiles(driveId, folderId = "root") {
                   data-name="${item.name}" data-size="${item.size || 0}">
             <i class="bi ${icon} me-2"></i>${item.name}
           </div>
-          <div class="file-size">${(item.size / (1024 * 1024)).toFixed(2)} MB</div>
+          <div class="file-size">${fileSizeMB} MB</div>
         </div>
       `;
+      a.href = item.webUrl;
+      a.target = "_blank";
+    }
     
       a.href = item.webUrl;
       a.target = "_blank";
