@@ -210,13 +210,21 @@ async function submitFiles() {
       totalSize += file.size;
     });
 
-    modalTotalSize.textContent = `📦 Total Size: ${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
-    createBtn.disabled = false;
+    const totalSizeMB = (totalSize / (1024 * 1024)).toFixed(2);
+    modalTotalSize.textContent = `📦 Total Size: ${totalSizeMB} MB`;
+
+    if (totalSize > 25 * 1024 * 1024) {
+      modalTotalSize.innerHTML += `<br><span class="text-danger">⚠️ Total size exceeds regular email limit (25MB)</span>`;
+      createBtn.disabled = true;
+    } else {
+      createBtn.disabled = false;
+    }
   }
 
   const fileModal = new bootstrap.Modal(document.getElementById("fileModal"));
   fileModal.show();
 }
+
 
 
 async function createDraftEmailWithAttachments() {
