@@ -129,7 +129,7 @@ async function loadFiles(driveId, folderId = "root") {
     a.className = "list-group-item list-group-item-action";
 
     if (item.folder) {
-      a.innerHTML = `<div class="file-row"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
+      a.innerHTML = `<div class="file-row" style="border-bottom: none;"><div class="file-name"><i class="bi ${icon} me-2"></i><strong>${item.name}</strong></div></div>`;
       a.href = "#";
       a.onclick = () => {
         breadcrumb.push({ id: item.id, name: item.name });
@@ -139,8 +139,7 @@ async function loadFiles(driveId, folderId = "root") {
     } else {
       a.innerHTML = `
         <div class="file-row">
-          <div class="file-name">
-            <i class="bi ${icon} me-2"></i>${item.name}
+          <div class="file-name"><button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button><i class="bi ${icon} me-2"></i>${item.name}
           </div>
           <div class="file-action">
             <button class="btn btn-sm btn-outline-success" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})">
