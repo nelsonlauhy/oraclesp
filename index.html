@@ -33,24 +33,25 @@
       margin-right: 0.5rem;
     }
     .btn-sm.btn-outline-success {
-  padding: 0.1rem 0.1rem;
-  font-size: 0.75rem;
-  line-height: 1;
-  width: 1.6rem;
-  height: 1.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+      padding: 0.1rem 0.1rem;
+      font-size: 0.75rem;
+      line-height: 1;
+      width: 1.6rem;
+      height: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 <body class="bg-white">
 
+  <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light border-bottom sticky-top" style="background-color: #dedef0;">
     <div class="container-fluid px-4">
       <span class="navbar-brand fw-semibold">
         <img src="images/logos.png" alt="Logo" height="28" class="me-2">
-          SharePoint Document Library Browser
+        SharePoint Document Library Browser
       </span>
       <div class="d-flex">
         <span id="userStatus" class="navbar-text me-3 text-muted" style="display: none;"></span>
@@ -59,26 +60,30 @@
     </div>
   </nav>
 
+  <!-- Main Content -->
   <div class="container-fluid px-4 py-4">
     <div class="sticky-top bg-white pb-3 z-3">
       <div id="welcomeMessage" class="alert alert-info">
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
+
+      <!-- New Site Selector -->
       <div class="mb-2">
         <label for="siteSelect" class="form-label">Select a SharePoint Site</label>
         <select class="form-select" id="siteSelect" disabled>
           <option selected disabled>Please select SharePoint Site</option>
         </select>
       </div>
+
+      <!-- Document Library Selector -->
       <div class="mb-2">
         <label for="librarySelect" class="form-label">Select a Document Library</label>
         <select class="form-select" id="librarySelect" disabled>
           <option selected disabled>Please select Document Library</option>
         </select>
       </div>
-      <div class="mb-2">
-        <br>
-      </div>
+
+      <!-- Selected Tags & Submit Button -->
       <div class="d-flex align-items-center justify-content-between mb-2">
         <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
         <div class="flex-grow-1">
@@ -89,16 +94,17 @@
         </div>
       </div>
 
+      <!-- Breadcrumb -->
       <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded">
         <ol class="breadcrumb" id="breadcrumb"></ol>
       </nav>
-      
+
+      <!-- File List -->
       <div id="fileList" class="list-group shadow-sm mt-1"></div>
     </div>
   </div>
-        
-  
 
+  <!-- Modal for Email Draft -->
   <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -118,6 +124,7 @@
     </div>
   </div>
 
+  <!-- Scripts -->
   <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="main.js"></script>
