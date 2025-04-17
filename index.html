@@ -49,9 +49,9 @@
   <nav class="navbar navbar-expand-lg navbar-light border-bottom sticky-top" style="background-color: #e6e6f2;">
     <div class="container-fluid px-4">
       <span class="navbar-brand fw-semibold">
-  <img src="images/logos.png" alt="Logo" height="28" class="me-2">
-  SharePoint Document Library Browser
-</span>
+        <img src="images/logos.png" alt="Logo" height="28" class="me-2">
+          SharePoint Document Library Browser
+      </span>
       <div class="d-flex">
         <span id="userStatus" class="navbar-text me-3 text-muted" style="display: none;"></span>
         <button class="btn btn-primary" id="signInBtn" onclick="signIn()">🔐 Sign in</button>
@@ -65,8 +65,6 @@
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
 
-      
-
       <div class="mb-2">
         <label for="librarySelect" class="form-label">Select a Document Library</label>
         <select class="form-select" id="librarySelect" disabled>
@@ -75,24 +73,20 @@
       </div>
 
       <div class="d-flex align-items-center justify-content-between mb-2">
-  <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
-  <div class="flex-grow-1">
-    <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
-  </div>
-  </div>
-<nav aria-label="breadcrumb" class="mb-1 border p-2 rounded">
-  <ol class="breadcrumb" id="breadcrumb"></ol>
-</nav>
-  
-</div>
+        <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
+        <div class="flex-grow-1">
+          <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
         </div>
-        
       </div>
+
+      <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded">
+        <ol class="breadcrumb" id="breadcrumb"></ol>
+      </nav>
+  
     </div>
-
-    <div id="fileList" class="list-group shadow-sm mt-1"></div>
-
   </div>
+        
+  <div id="fileList" class="list-group shadow-sm mt-1"></div>
 
   <div class="modal fade" id="fileModal" tabindex="-1" aria-labelledby="fileModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
