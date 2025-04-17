@@ -25,7 +25,12 @@ window.onload = async () => {
       });
       accessToken = result.accessToken;
       updateUIAfterLogin(currentAccounts[0]);
-      await loadSites();
+
+      // Activate dropdown after login
+      document.getElementById("siteSelect").onchange = () => {
+        currentSiteId = document.getElementById("siteSelect").value;
+        loadLibraries();
+      };
     } catch (error) {
       console.warn("Silent token acquisition failed", error);
     }
@@ -40,7 +45,12 @@ async function signIn() {
 
     accessToken = result.accessToken;
     updateUIAfterLogin(result.account);
-    await loadSites();
+
+    // Activate dropdown after login
+    document.getElementById("siteSelect").onchange = () => {
+      currentSiteId = document.getElementById("siteSelect").value;
+      loadLibraries();
+    };
   } catch (err) {
     console.error("Login failed", err);
   }
@@ -51,33 +61,6 @@ function updateUIAfterLogin(account) {
   document.getElementById("welcomeMessage").style.display = "none";
   document.getElementById("userStatus").style.display = "inline-block";
   document.getElementById("userStatus").textContent = `✅ Signed in as ${account.username}`;
-}
-
-async function loadSites() {
-  const siteSelect = document.getElementById("siteSelect");
-  siteSelect.innerHTML = '<option selected disabled>Loading...</option>';
-  siteSelect.disabled = false;
-
-  const res = await fetch("https://graph.microsoft.com/v1.0/sites?search=*", {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
-
-  const data = await res.json();
-
-  siteSelect.innerHTML = '<option selected disabled>Select a SharePoint Site</option>';
-  data.value.forEach(site => {
-    const option = document.createElement("option");
-    option.value = `${site.hostname},${site.id}`;
-    option.textContent = site.name || site.webUrl;
-    siteSelect.appendChild(option);
-  });
-
-  siteSelect.onchange = () => {
-    const [hostname, id] = siteSelect.value.split(",");
-    currentSiteId = `${hostname},${id}`;
-    console.log("Selected site:", currentSiteId);
-    loadLibraries();
-  };
 }
 
 async function loadLibraries() {
@@ -91,7 +74,6 @@ async function loadLibraries() {
   select.disabled = false;
 
   const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
-
   sortedLibraries.forEach(lib => {
     const option = document.createElement("option");
     option.value = lib.id;
@@ -136,7 +118,10 @@ async function loadFiles(driveId, folderId = "root") {
     } else {
       a.innerHTML = `
         <div class="file-row">
-          <div class="file-name"><button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button><i class="bi ${icon} me-2"></i>${item.name}</div>
+          <div class="file-name">
+            <button class="btn btn-sm btn-outline-success me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button>
+            <i class="bi ${icon} me-2"></i>${item.name}
+          </div>
         </div>
       `;
       a.href = item.webUrl;
@@ -221,10 +206,8 @@ async function submitFiles() {
     selectedFileItems.forEach(file => {
       const li = document.createElement("li");
       li.className = "list-group-item d-flex justify-content-between align-items-center";
-
       const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       li.innerHTML = `<span>${file.name}</span><span class="text-muted">${sizeMB} MB</span>`;
-
       modalFileList.appendChild(li);
       totalSize += file.size;
     });
@@ -233,7 +216,7 @@ async function submitFiles() {
     modalTotalSize.textContent = `📦 Total Size: ${totalSizeMB} MB`;
 
     if (totalSize > 25 * 1024 * 1024) {
-      modalTotalSize.innerHTML += `<br><span class="text-danger">⚠️ Total size exceeds regular email limit (25MB)</span>`;
+      modalTotalSize.innerHTML += `<br><span class="text-danger">⚠️ Total size exceeds 25MB limit</span>`;
       createBtn.disabled = true;
     } else {
       createBtn.disabled = false;
@@ -250,7 +233,7 @@ async function createDraftEmailWithAttachments() {
   const cancelBtn = document.querySelector("#fileModal .btn-secondary");
 
   createBtn.disabled = true;
-  modalBody.innerHTML += `<div class="text-info mt-3">📥 Downloading files and creating draft email...</div>`;
+  modalBody.innerHTML += `<div class="text-info mt-3">📥 Creating draft email and uploading files...</div>`;
 
   try {
     const emailRes = await fetch("https://graph.microsoft.com/v1.0/me/messages", {
@@ -290,7 +273,7 @@ async function createDraftEmailWithAttachments() {
       });
     }
 
-    modalBody.innerHTML += `<div class="text-success mt-3">✅ Draft email with attachments created.<br><a href="https://outlook.office365.com/mail/drafts" target="_blank">Open Drafts</a></div>`;
+    modalBody.innerHTML += `<div class="text-success mt-3">✅ Draft email created.<br><a href="https://outlook.office365.com/mail/drafts" target="_blank">Open Drafts</a></div>`;
     cancelBtn.textContent = "Close";
   } catch (error) {
     console.error("Error creating draft email:", error);
@@ -301,9 +284,7 @@ async function createDraftEmailWithAttachments() {
 
 async function downloadFileAsBase64(driveId, itemId) {
   const response = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/content`, {
-    headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
+    headers: { Authorization: `Bearer ${accessToken}` }
   });
 
   const blob = await response.blob();
@@ -317,19 +298,4 @@ async function downloadFileAsBase64(driveId, itemId) {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
-}
-
-async function onSiteSelected() {
-  const select = document.getElementById("siteSelect");
-  const selectedValue = select.value;
-
-  if (!selectedValue) return;
-
-  try {
-    siteId = selectedValue;
-    await loadLibraries(); // refresh the document libraries for selected site
-  } catch (error) {
-    console.error("Failed to load site:", error);
-    alert("🚫 You do not have permission to access this site.");
-  }
 }
