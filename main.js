@@ -194,7 +194,7 @@ async function submitFiles() {
 
       const li = document.createElement("li");
       li.className = "list-group-item d-flex justify-content-between";
-      li.innerHTML = `<span>${name}</span><span>${(size / (1024 * 1024)).toFixed(2)} MB</span>`;
+      li.innerHTML = `<span>${name}</span>`;
       list.appendChild(li);
     });
 
