@@ -104,7 +104,7 @@ async function loadFiles(driveId, folderId = "root") {
   data.value.forEach(item => {
     const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
     const nameHtml = item.folder ? `<strong>${item.name}</strong>` : item.name;
-    const fileSizeMB = item.size ? ` (${(item.size / (1024 * 1024)).toFixed(2)} MB)` : "";
+    //const fileSizeMB = item.size ? ` (${(item.size / (1024 * 1024)).toFixed(2)} MB)` : "";
 
     const a = document.createElement("a");
     a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
@@ -123,7 +123,9 @@ async function loadFiles(driveId, folderId = "root") {
           <input type="checkbox" class="form-check-input me-2 file-check"
                  data-id="${item.id}" data-drive="${driveId}"
                  data-name="${item.name}" data-size="${item.size || 0}">
-          <i class="bi ${icon} me-2"></i>${nameHtml}<span class="float-end">${fileSizeMB}</span>
+
+          <i class="bi ${icon} me-2"></i>${nameHtml}
+
         </span>
       `;
       a.href = item.webUrl;
@@ -194,7 +196,7 @@ async function submitFiles() {
 
       const li = document.createElement("li");
       li.className = "list-group-item d-flex justify-content-between";
-      li.innerHTML = `<span>${name}</span>`;
+      li.innerHTML = `<span>${name}</span><span>${(size / (1024 * 1024)).toFixed(2)} MB</span>`;
       list.appendChild(li);
     });
 
