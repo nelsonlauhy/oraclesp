@@ -7,7 +7,6 @@ const msalConfig = {
 };
 
 const siteId = "oraclegrouprealty.sharepoint.com,8b247071-c01e-4b83-958e-413d2e156b40,7892dd7a-2e84-4201-a4d4-dba0582d500e";
-
 const msalInstance = new msal.PublicClientApplication(msalConfig);
 
 let accessToken = null;
@@ -96,6 +95,7 @@ async function loadFiles(driveId, folderId = "root") {
   data.value.forEach(item => {
     const icon = item.folder ? 'bi-folder' : 'bi-file-earmark';
     const nameHtml = item.folder ? `<strong>${item.name}</strong>` : item.name;
+    const fileSizeMB = item.size ? ` (${(item.size / (1024 * 1024)).toFixed(2)} MB)` : "";
 
     const a = document.createElement("a");
     a.className = "list-group-item list-group-item-action d-flex justify-content-between align-items-center";
@@ -111,8 +111,10 @@ async function loadFiles(driveId, folderId = "root") {
     } else {
       a.innerHTML = `
         <span>
-          <input type="checkbox" class="form-check-input me-2 file-check" data-id="${item.id}" data-drive="${driveId}" data-name="${item.name}">
-          <i class="bi ${icon} me-2"></i>${nameHtml}
+          <input type="checkbox" class="form-check-input me-2 file-check"
+                 data-id="${item.id}" data-drive="${driveId}"
+                 data-name="${item.name}" data-size="${item.size || 0}">
+          <i class="bi ${icon} me-2"></i>${nameHtml}${fileSizeMB}
         </span>
       `;
       a.href = item.webUrl;
@@ -170,21 +172,30 @@ async function submitFiles() {
   } else {
     const list = document.createElement("ul");
     list.className = "list-group";
+    let totalSize = 0;
 
     checkboxes.forEach(cb => {
       const driveId = cb.getAttribute("data-drive");
       const itemId = cb.getAttribute("data-id");
       const name = cb.getAttribute("data-name");
+      const size = parseInt(cb.getAttribute("data-size") || "0");
 
-      selectedFileItems.push({ driveId, itemId, name });
+      selectedFileItems.push({ driveId, itemId, name, size });
+      totalSize += size;
 
       const li = document.createElement("li");
       li.className = "list-group-item";
-      li.textContent = name;
+      li.textContent = `${name} - ${(size / (1024 * 1024)).toFixed(2)} MB`;
       list.appendChild(li);
     });
 
     modalBody.appendChild(list);
+
+    const totalInfo = document.createElement("div");
+    totalInfo.className = "mt-3 fw-bold";
+    totalInfo.innerHTML = `📦 Total Size: ${(totalSize / (1024 * 1024)).toFixed(2)} MB`;
+    modalBody.appendChild(totalInfo);
+
     createBtn.disabled = false;
   }
 
