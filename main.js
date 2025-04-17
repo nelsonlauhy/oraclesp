@@ -86,6 +86,13 @@ async function loadLibraries() {
     breadcrumb = [];
     loadFiles(currentDriveId);
   };
+  
+  // ✅ Auto-select the first available library and load it
+  if (select.options.length > 1) {
+    select.selectedIndex = 1;
+    select.dispatchEvent(new Event("change"));
+  }
+  
 }
 
 async function loadFiles(driveId, folderId = "root") {
