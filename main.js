@@ -85,6 +85,11 @@ async function loadLibraries() {
     currentDriveId = select.value;
     breadcrumb = [];
     loadFiles(currentDriveId);
+  
+    const selectedLibraryText = select.options[select.selectedIndex].textContent;
+    if (selectedLibraryText !== "Select a Document Library") {
+      document.getElementById("mainContentSection").classList.remove("d-none");
+    }
   };
   
   // ✅ Auto-select the first available library and load it
@@ -138,9 +143,7 @@ async function loadFiles(driveId, folderId = "root") {
     list.appendChild(a);
   });
 
-  const selectedLibraryText = select.options[select.selectedIndex].textContent;
-
-  if (selectedLibraryText !== "Select a Document Library") {
+  if (data.value.length >= 0) {
     document.getElementById("mainContentSection").classList.remove("d-none");
   }
 }
