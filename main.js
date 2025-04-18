@@ -138,7 +138,9 @@ async function loadFiles(driveId, folderId = "root") {
     list.appendChild(a);
   });
 
-  document.getElementById("mainContentSection").classList.remove("d-none");
+  if (data.value.length >= 0) {
+    document.getElementById("mainContentSection").classList.remove("d-none");
+  }
 }
 
 function updateBreadcrumb() {
