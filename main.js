@@ -64,41 +64,59 @@ function updateUIAfterLogin(account) {
 }
 
 async function loadLibraries() {
-  const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${currentSiteId}/drives`, {
-    headers: { Authorization: `Bearer ${accessToken}` }
-  });
+  // Hide main section by default when a new site is selected
+  document.getElementById("mainContentSection").classList.add("d-none");
+  document.getElementById("fileList").innerHTML = "";
+  document.getElementById("selectedTags").innerHTML = "";
 
-  const data = await res.json();
   const select = document.getElementById("librarySelect");
   select.innerHTML = '<option selected disabled>Select a Document Library</option>';
-  select.disabled = false;
+  select.disabled = true;
 
-  const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
-  sortedLibraries.forEach(lib => {
-    const option = document.createElement("option");
-    option.value = lib.id;
-    option.textContent = lib.name;
-    select.appendChild(option);
-  });
+  try {
+    const res = await fetch(`https://graph.microsoft.com/v1.0/sites/${currentSiteId}/drives`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
 
-  select.onchange = () => {
-    currentDriveId = select.value;
-    breadcrumb = [];
-    loadFiles(currentDriveId);
-  
-    const selectedLibraryText = select.options[select.selectedIndex].textContent;
-    if (selectedLibraryText !== "Select a Document Library") {
-      document.getElementById("mainContentSection").classList.remove("d-none");
+    if (!res.ok) {
+      throw new Error(`Access denied or error loading drives (status: ${res.status})`);
     }
-  };
-  
-  // ✅ Auto-select the first available library and load it
-  if (select.options.length > 1) {
-    select.selectedIndex = 1;
-    select.dispatchEvent(new Event("change"));
+
+    const data = await res.json();
+
+    const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
+    sortedLibraries.forEach(lib => {
+      const option = document.createElement("option");
+      option.value = lib.id;
+      option.textContent = lib.name;
+      select.appendChild(option);
+    });
+
+    select.disabled = false;
+
+    select.onchange = () => {
+      currentDriveId = select.value;
+      breadcrumb = [];
+      loadFiles(currentDriveId);
+
+      const selectedLibraryText = select.options[select.selectedIndex].textContent;
+      if (selectedLibraryText !== "Select a Document Library") {
+        document.getElementById("mainContentSection").classList.remove("d-none");
+      }
+    };
+
+    // Auto-select first library if available
+    if (select.options.length > 1) {
+      select.selectedIndex = 1;
+      select.dispatchEvent(new Event("change"));
+    }
+  } catch (error) {
+    console.error("Error loading libraries:", error);
+    // Optional: show a user-friendly alert
+    alert("⚠️ You do not have permission to access this SharePoint site.");
   }
-  
 }
+
 
 async function loadFiles(driveId, folderId = "root") {
   currentFolderId = folderId;
