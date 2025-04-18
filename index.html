@@ -95,7 +95,9 @@
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
 
-      <!-- Site & Library Selectors -->
+      <!-- Site & Library Selectors --> 
+      <!-- Get Site ID: https://developer.microsoft.com/en-us/graph/graph-explorer -->
+      <!-- Query: GET https://graph.microsoft.com/v1.0/sites/oraclegrouprealty.sharepoint.com:/sites/ITSite -->
       <div class="d-flex gap-3 mb-2">
         <div class="flex-grow-1">
           <label for="siteSelect" class="form-label">Select a SharePoint Site</label>
@@ -117,6 +119,19 @@
         </div>
       </div>
 
+      <!-- Line Separator -->
+      <hr class="my-3" />
+      
+      <!-- Breadcrumb -->
+      <!-- <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded"> -->
+      <nav aria-label="breadcrumb" class="mb-1">
+        <ol class="breadcrumb" id="breadcrumb"></ol>
+      </nav>
+
+      <!-- File List Display -->
+      <div id="fileList" class="list-group shadow-sm mt-1"></div>
+
+      <!-- Line Separator -->
       <hr class="my-3" />
 
       <!-- File Tags & Submit -->
@@ -129,18 +144,6 @@
           <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
         </div>
       </div>
-
-      <!-- Line Separator -->
-      <hr class="my-3" />
-
-      <!-- Breadcrumb -->
-      <!-- <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded"> -->
-      <nav aria-label="breadcrumb" class="mb-1">
-        <ol class="breadcrumb" id="breadcrumb"></ol>
-      </nav>
-
-      <!-- File List Display -->
-      <div id="fileList" class="list-group shadow-sm mt-1"></div>
     </div>
   </div>
 
