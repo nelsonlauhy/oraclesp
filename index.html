@@ -121,33 +121,35 @@
 
       <!-- Line Separator -->
       <hr class="my-3" />
-      <div class="d-block mt-2 ms-1 text-muted" style="font-size: 1.2rem; font-weight: 600;">
-        Folder and File List
-      </div>
-      
-      <small class="d-block mt-2 ms-1" style="color: #555;">
-        Click the <strong>+</strong> button to add file(s) as email attachment, then click <strong>Submit</strong> to create an email draft in your mailbox.
-      </small>
-
-      <!-- Breadcrumb -->
-      <!-- <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded"> -->
-      <nav aria-label="breadcrumb" class="mb-1">
-        <ol class="breadcrumb" id="breadcrumb"></ol>
-      </nav>
-
-      <!-- File List Display -->
-      <div id="fileList" class="list-group shadow-sm mt-1"></div>
-
-      <small class="text-muted d-block mt-2 ms-1"></small>
-
-      <!-- File Tags & Submit -->
-      <div class="d-flex align-items-center justify-content-between mb-2">
-        <div class="me-3 text-nowrap fw-semibold">Selected Files for email attachment:</div>
-        <div class="flex-grow-1">
-          <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
+      <div id="mainContentSection" class="d-none">
+        <div class="d-block mt-2 ms-1 text-muted" style="font-size: 1.2rem; font-weight: 600;">
+          Folder and File List
         </div>
-        <div class="ms-3">
-          <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
+        
+        <small class="d-block mt-2 ms-1" style="color: #555;">
+          Click the <strong>+</strong> button to add file(s) as email attachment, then click <strong>Submit</strong> to create an email draft in your mailbox.
+        </small>
+
+        <!-- Breadcrumb -->
+        <!-- <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded"> -->
+        <nav aria-label="breadcrumb" class="mb-1">
+          <ol class="breadcrumb" id="breadcrumb"></ol>
+        </nav>
+
+        <!-- File List Display -->
+        <div id="fileList" class="list-group shadow-sm mt-1"></div>
+
+        <small class="text-muted d-block mt-2 ms-1"></small>
+
+        <!-- File Tags & Submit -->
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <div class="me-3 text-nowrap fw-semibold">Selected Files for email attachment:</div>
+          <div class="flex-grow-1">
+            <div id="selectedTags" class="d-flex flex-wrap gap-2"></div>
+          </div>
+          <div class="ms-3">
+            <button class="btn btn-success" id="submitBtn" onclick="submitFiles()">Submit</button>
+          </div>
         </div>
       </div>
     </div>
