@@ -13,6 +13,7 @@
       border: 1px solid #ccc;
       border-radius: 6px;
     }
+
     .file-row {
       display: flex;
       align-items: center;
@@ -20,6 +21,7 @@
       border-bottom: none;
       font-size: 0.9rem;
     }
+
     .file-name {
       flex: 1;
       text-align: left;
@@ -29,9 +31,12 @@
       align-items: center;
       gap: 0.5rem;
     }
+
     .file-check {
       margin-right: 0.5rem;
     }
+
+    /* Default green small button style - keep unchanged if used elsewhere */
     .btn-sm.btn-outline-success {
       padding: 0.1rem 0.1rem;
       font-size: 0.75rem;
@@ -41,6 +46,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    /* Custom grey button style for '+' icon */
+    .btn-add-lightgrey {
+      background-color: #e0e0e0; /* light grey */
+      color: #000;
+      border: none;
+    }
+
+    .btn-add-lightgrey:hover {
+      background-color: #bdbdbd; /* darker grey on hover */
+      color: #000;
     }
   </style>
 </head>
@@ -66,6 +83,8 @@
       <div id="welcomeMessage" class="alert alert-info">
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
+
+      <!-- Site & Library Selectors -->
       <div class="d-flex gap-3 mb-2">
         <div class="flex-grow-1">
           <label for="siteSelect" class="form-label">Select a SharePoint Site</label>
@@ -88,7 +107,7 @@
       </div>
 
       <hr class="my-3" />
-      
+
       <!-- File Tags & Submit -->
       <div class="d-flex align-items-center justify-content-between mb-2">
         <div class="me-3 text-nowrap fw-semibold">Selected Files:</div>
@@ -100,6 +119,7 @@
         </div>
       </div>
 
+      <!-- Line Separator -->
       <hr class="my-3" />
 
       <!-- Breadcrumb -->
