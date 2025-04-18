@@ -138,7 +138,9 @@ async function loadFiles(driveId, folderId = "root") {
     list.appendChild(a);
   });
 
-  if (data.value.length >= 0) {
+  const selectedLibraryText = select.options[select.selectedIndex].textContent;
+
+  if (selectedLibraryText !== "Select a Document Library") {
     document.getElementById("mainContentSection").classList.remove("d-none");
   }
 }
