@@ -66,9 +66,8 @@
       <div id="welcomeMessage" class="alert alert-info">
         🔒 Please sign in to access your SharePoint document libraries.
       </div>
-      <div class="col-12 col-md-6">
-        <!-- Fixed Site Selector -->
-        <div class="mb-2">
+      <div class="d-flex gap-3 mb-2">
+        <div class="flex-grow-1">
           <label for="siteSelect" class="form-label">Select a SharePoint Site</label>
           <select class="form-select" id="siteSelect">
             <option selected disabled>Select SharePoint Site</option>
@@ -80,7 +79,7 @@
         </div>
 
         <!-- Library Selector -->
-        <div class="col-12 col-md-6">
+        <div class="flex-grow-1">
           <label for="librarySelect" class="form-label">Select a Document Library</label>
           <select class="form-select" id="librarySelect" disabled>
             <option selected disabled>Select a site first</option>
