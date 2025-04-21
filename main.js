@@ -449,7 +449,8 @@ confirmBtn.onclick = async () => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      Request_x0020_Date: new Date().toISOString(),
+      Requester: currentUser,
+      Request_x0020_Date: currentDate,
       Approval_x0020_Status: "Open",
       Approver_x0020_Comment: "Approval requested" // ← multiple line text, safest test field
     })
