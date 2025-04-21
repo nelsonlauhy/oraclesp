@@ -146,6 +146,15 @@ async function loadFiles(driveId, folderId = "root") {
         return false;
       };
     } else {
+      let approvalButtonHTML = '';
+      if (item.name.toLowerCase().endsWith('.pdf')) {
+        approvalButtonHTML = `
+          <button class="btn btn-sm btn-add-lightgrey me-2" title="Request Document Approval"
+            onclick="event.preventDefault(); openApprovalModal('${item.id}', '${driveId}', '${item.name}')">
+            <i class="bi bi-check-lg"></i>
+          </button>`;
+      }
+
       a.innerHTML = `
         <div class="file-row">
           <div class="file-name">
@@ -153,14 +162,12 @@ async function loadFiles(driveId, folderId = "root") {
               onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})">
               <i class="bi bi-plus-lg"></i>
             </button>
-            <button class="btn btn-sm btn-add-lightgrey me-2" title="Request Document Approval"
-              onclick="event.preventDefault(); openApprovalModal('${item.id}', '${driveId}', '${item.name}')">
-              <i class="bi bi-check-lg"></i>
-            </button>
+            ${approvalButtonHTML}
             <i class="bi ${icon} me-2"></i>${item.name}
           </div>
         </div>
       `;
+
       a.href = item.webUrl;
       a.target = "_blank";
     }
