@@ -387,3 +387,58 @@ async function openApprovalModal(itemId, driveId, fileName) {
   modal.show();
 }
 
+// 📥 Send Approval Request and Upload to SharePoint
+const confirmBtn = document.getElementById("confirmApprovalBtn");
+confirmBtn.onclick = async () => {
+  const approverEmail = document.getElementById("approverSelect").value;
+  const currentUser = msalInstance.getAllAccounts()[0]?.username;
+  const currentDate = new Date().toISOString();
+
+  if (!selectedFileItems.length) return alert("Please select a file.");
+  const file = selectedFileItems[selectedFileItems.length - 1];
+
+  if (!file.name.toLowerCase().endsWith('.pdf')) {
+    return alert("Only PDF files can be submitted for approval.");
+  }
+
+  if (!approvalDriveId) {
+    const driveRes = await fetch(`https://graph.microsoft.com/v1.0/sites/${approvalSiteId}/drives`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const driveData = await driveRes.json();
+    const approvalDrive = driveData.value.find(d => d.name === "Document Approval");
+    if (!approvalDrive) return alert("Document Approval library not found.");
+    approvalDriveId = approvalDrive.id;
+  }
+
+  const fileBlob = await fetch(`https://graph.microsoft.com/v1.0/drives/${file.driveId}/items/${file.itemId}/content`, {
+    headers: { Authorization: `Bearer ${accessToken}` }
+  }).then(r => r.blob());
+
+  const uploadRes = await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/root:/Approvals/${file.name}:/content`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${accessToken}` },
+    body: fileBlob
+  });
+
+  const uploaded = await uploadRes.json();
+  const uploadedId = uploaded.id;
+
+  await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/items/${uploadedId}/fields`, {
+    method: "PATCH",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      Requester: currentUser,
+      Approver: approverEmail,
+      "Request Date": currentDate,
+      "Approve Date": currentDate,
+      "Approval Status": "Open"
+    })
+  });
+
+  alert("✅ Approval request sent and file uploaded.");
+  bootstrap.Modal.getInstance(document.getElementById("approvalModal")).hide();
+};
