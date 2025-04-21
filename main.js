@@ -353,3 +353,41 @@ function openApprovalModal(itemId, driveId, name) {
   // Next: Implement modal to select approver and send request
 }
 
+async function openApprovalModal(itemId, driveId, fileName) {
+  const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
+  const approverSelect = document.getElementById('approverSelect');
+  const confirmBtn = document.getElementById('confirmApprovalBtn');
+
+  // Reset state
+  approverSelect.innerHTML = '<option disabled selected>Loading approvers...</option>';
+  confirmBtn.disabled = true;
+
+  // Load users from Microsoft Graph
+  try {
+    const res = await fetch("https://graph.microsoft.com/v1.0/users?$filter=accountEnabled eq true&$select=displayName,mail", {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const data = await res.json();
+
+    // Populate dropdown
+    approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
+    data.value.forEach(user => {
+      if (user.mail) {
+        const option = document.createElement("option");
+        option.value = user.mail;
+        option.textContent = `${user.displayName} (${user.mail})`;
+        approverSelect.appendChild(option);
+      }
+    });
+
+    approverSelect.onchange = () => {
+      confirmBtn.disabled = false;
+    };
+
+    // TODO: handle confirmApprovalBtn click later
+    modal.show();
+  } catch (err) {
+    approverSelect.innerHTML = '<option disabled selected>Unable to load users</option>';
+    console.error("Error loading user list:", err);
+  }
+}

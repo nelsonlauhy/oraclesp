@@ -191,6 +191,31 @@
       </div>
     </div>
   </div>
+  
+  <!-- Approval Modal -->
+  <div class="modal fade" id="approvalModal" tabindex="-1" aria-labelledby="approvalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="approvalModalLabel">Request Document Approval</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="approverSelect" class="form-label">Select Approver</label>
+            <select class="form-select" id="approverSelect">
+              <option disabled selected>Loading approvers...</option>
+            </select>
+          </div>
+          <div class="form-text">This person will receive the document and be able to approve or reject the request.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmApprovalBtn" disabled>Send Approval Request</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Scripts -->
   <script src="https://alcdn.msauth.net/browser/2.38.1/js/msal-browser.min.js"></script>
