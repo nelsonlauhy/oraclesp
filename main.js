@@ -397,6 +397,7 @@ confirmBtn.onclick = async () => {
   const approverEmail = document.getElementById("approverSelect").value;
   const currentUser = msalInstance.getAllAccounts()[0]?.username;
   const currentDate = new Date().toISOString();
+  const description = document.getElementById("approvalDescription").value || "";
 
   if (!approvalFile) return alert("No file selected for approval.");
 
@@ -449,13 +450,13 @@ confirmBtn.onclick = async () => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      RequesterFullName: currentUser.split("@")[0],     // or a better display name if you have it
+      RequesterFullName: currentUser.split("@")[0],
       RequesterEmail: currentUser,
       ApproverFullName: approverSelect.options[approverSelect.selectedIndex].text.split(" (")[0],
       ApproverEmail: approverSelect.value,
       Request_x0020_Date: new Date().toISOString(),
       Approval_x0020_Status: "Open",
-      Approver_x0020_Comment: "Approval requested"
+      Description: description  
     })
   });
   
