@@ -14,6 +14,7 @@ let currentDriveId = null;
 let currentFolderId = null;
 let breadcrumb = [];
 let selectedFileItems = [];
+let approvalFile = null;
 
 // Site & Library info for approval
 const approvalSiteId = "oraclegrouprealty.sharepoint.com,c5ba3f80-5bf7-43f6-9a12-10ca25d7605e,41f63e3f-fb91-4081-abd0-c33900b4ee9a";
@@ -354,17 +355,16 @@ async function downloadFileAsBase64(driveId, itemId) {
 }
 
 async function openApprovalModal(itemId, driveId, fileName) {
+  approvalFile = { itemId, driveId, name: fileName }; // ✅ Store selected approval file
   const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
   const approverSelect = document.getElementById('approverSelect');
   const confirmBtn = document.getElementById('confirmApprovalBtn');
 
   document.getElementById("approvalFileName").textContent = `📄 You are requesting approval for: "${fileName}"`;
 
-  // Reset dropdown and button
   approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
   confirmBtn.disabled = true;
 
-  // Hardcoded approver list
   const approvers = [
     { displayName: "Kelvin Wong", email: "kelvinw@oraclegr.com" },
     { displayName: "Benjamin Wong", email: "benw@oraclegr.com" },
@@ -376,7 +376,6 @@ async function openApprovalModal(itemId, driveId, fileName) {
     { displayName: "Nelson Lau", email: "nelsonlau@livingrealtykw.com" }
   ];
 
-  // Populate dropdown
   approvers.forEach(person => {
     const option = document.createElement("option");
     option.value = person.email;
@@ -391,6 +390,7 @@ async function openApprovalModal(itemId, driveId, fileName) {
   modal.show();
 }
 
+
 // 📥 Send Approval Request and Upload to SharePoint
 const confirmBtn = document.getElementById("confirmApprovalBtn");
 confirmBtn.onclick = async () => {
@@ -398,8 +398,8 @@ confirmBtn.onclick = async () => {
   const currentUser = msalInstance.getAllAccounts()[0]?.username;
   const currentDate = new Date().toISOString();
 
-  if (!selectedFileItems.length) return alert("Please select a file.");
-  const file = selectedFileItems[selectedFileItems.length - 1];
+  if (!approvalFile) return alert("No file selected for approval.");
+  const file = approvalFile;
 
   if (!file.name.toLowerCase().endsWith('.pdf')) {
     return alert("Only PDF files can be submitted for approval.");
