@@ -455,8 +455,8 @@ confirmBtn.onclick = async () => {
       ApproverFullName: approverSelect.options[approverSelect.selectedIndex].text.split(" (")[0],
       ApproverEmail: approverSelect.value,
       Request_x0020_Date: new Date().toISOString(),
-      Approval_x0020_Status: "Open",
-      Description: description  
+      Approval_x0020_Status: "Open"
+      //Description: description  
     })
   });
   
