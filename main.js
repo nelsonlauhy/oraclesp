@@ -373,7 +373,7 @@ async function openApprovalModal(itemId, driveId, fileName) {
     { displayName: "Jason Garland", email: "jasong@oraclegr.com" },
     { displayName: "Joanna Jiawen Xie", email: "joannax@oraclegr.com" },
     { displayName: "Sabrina Rollock", email: "sabrinar@oraclegr.com" },
-    { displayName: "Nelson Lau", email: "nelsonlau@livingrealtykw.com" }
+    { displayName: "Nelson Lau", email: "itadmin@oraclegr.com" }
   ];
 
   approvers.forEach(person => {
@@ -451,6 +451,7 @@ confirmBtn.onclick = async () => {
     body: JSON.stringify({
       Requester: currentUser,
       Request_x0020_Date: currentDate,
+      Approver: approverEmail,
       Approval_x0020_Status: "Open",
       Approver_x0020_Comment: "Approval requested" // ← multiple line text, safest test field
     })
