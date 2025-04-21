@@ -449,6 +449,7 @@ confirmBtn.onclick = async () => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
+      Approver_x0020_Status: "Open",
       Approver_x0020_Comment: "Approval requested" // ← multiple line text, safest test field
     })
   });
