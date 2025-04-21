@@ -449,13 +449,16 @@ confirmBtn.onclick = async () => {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      Requester: currentUser,
-      Request_x0020_Date: currentDate,
-      Approver: approverEmail,
+      RequesterFullName: currentUser.split("@")[0],     // or a better display name if you have it
+      RequesterEmail: currentUser,
+      ApproverFullName: approverSelect.options[approverSelect.selectedIndex].text.split(" (")[0],
+      ApproverEmail: approverSelect.value,
+      Request_x0020_Date: new Date().toISOString(),
       Approval_x0020_Status: "Open",
-      Approver_x0020_Comment: "Approval requested" // ← multiple line text, safest test field
+      Approver_x0020_Comment: "Approval requested"
     })
   });
+  
   
 
   alert("✅ Approval request sent and file uploaded.");
