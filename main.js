@@ -391,7 +391,7 @@ async function openApprovalModal(itemId, driveId, fileName) {
 }
 
 
-// 📥 Send Approval Request and Upload to SharePoint
+// Handle the approval submission
 const confirmBtn = document.getElementById("confirmApprovalBtn");
 confirmBtn.onclick = async () => {
   const approverEmail = document.getElementById("approverSelect").value;
@@ -399,12 +399,15 @@ confirmBtn.onclick = async () => {
   const currentDate = new Date().toISOString();
 
   if (!approvalFile) return alert("No file selected for approval.");
+
   const file = approvalFile;
 
+  // Validate file type is PDF
   if (!file.name.toLowerCase().endsWith('.pdf')) {
     return alert("Only PDF files can be submitted for approval.");
   }
 
+  // Step 1: Get Document Approval Library Drive ID
   if (!approvalDriveId) {
     const driveRes = await fetch(`https://graph.microsoft.com/v1.0/sites/${approvalSiteId}/drives`, {
       headers: { Authorization: `Bearer ${accessToken}` }
@@ -415,19 +418,29 @@ confirmBtn.onclick = async () => {
     approvalDriveId = approvalDrive.id;
   }
 
+  // Step 2: Download original file from source library
   const fileBlob = await fetch(`https://graph.microsoft.com/v1.0/drives/${file.driveId}/items/${file.itemId}/content`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   }).then(r => r.blob());
 
-  const uploadRes = await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/root:/Approvals/${file.name}:/content`, {
+  // Step 3: Upload file to Approval Library root
+  const uploadRes = await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/root:/${file.name}:/content`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${accessToken}` },
     body: fileBlob
   });
 
   const uploaded = await uploadRes.json();
+
+  if (!uploadRes.ok) {
+    console.error("Upload failed:", uploaded);
+    alert("❌ Failed to upload the file to the Document Approval library.");
+    return;
+  }
+
   const uploadedId = uploaded.id;
 
+  // Step 4: Update fields with metadata
   await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/items/${uploadedId}/fields`, {
     method: "PATCH",
     headers: {
