@@ -355,44 +355,33 @@ async function openApprovalModal(itemId, driveId, fileName) {
   const confirmBtn = document.getElementById('confirmApprovalBtn');
 
   // Reset dropdown and button
-  approverSelect.innerHTML = '<option disabled selected>Loading recent contacts...</option>';
+  approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
   confirmBtn.disabled = true;
 
-  try {
-    // ✅ Use /me/people instead of /users
-    const res = await fetch("https://graph.microsoft.com/v1.0/me/people?$select=displayName,emailAddresses&$top=20", {
-      headers: { Authorization: `Bearer ${accessToken}` }
-    });
+  // Hardcoded approver list
+  const approvers = [
+    { displayName: "Kelvin Wong", email: "kelvinw@oraclegr.com" },
+    { displayName: "Benjamin Wong", email: "benw@oraclegr.com" },
+    { displayName: "Dan Flomen", email: "dan@oraclegr.com" },
+    { displayName: "Kassaundra Dobson", email: "kassaundrad@oraclegr.com" },
+    { displayName: "Jason Garland", email: "jasong@oraclegr.com" },
+    { displayName: "Joanna Jiawen Xie", email: "joannax@oraclegr.com" },
+    { displayName: "Sabrina Rollock", email: "sabrinar@oraclegr.com" },
+    { displayName: "Nelson Lau", email: "nelsonlau@livingrealtykw.com" }
+  ];
 
-    const data = await res.json();
-    console.log("People response:", data);
+  // Populate dropdown
+  approvers.forEach(person => {
+    const option = document.createElement("option");
+    option.value = person.email;
+    option.textContent = `${person.displayName} (${person.email})`;
+    approverSelect.appendChild(option);
+  });
 
-    if (!data || !data.value || data.value.length === 0) {
-      approverSelect.innerHTML = '<option disabled selected>No contacts found</option>';
-      return;
-    }
+  approverSelect.onchange = () => {
+    confirmBtn.disabled = false;
+  };
 
-    // Build dropdown
-    approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
-    data.value.forEach(person => {
-      const email = person.emailAddresses?.[0]?.address;
-      if (email) {
-        const option = document.createElement("option");
-        option.value = email;
-        option.textContent = `${person.displayName} (${email})`;
-        approverSelect.appendChild(option);
-      }
-    });
-
-    // Enable button only when a valid selection is made
-    approverSelect.onchange = () => {
-      confirmBtn.disabled = false;
-    };
-
-    modal.show();
-  } catch (err) {
-    console.error("Error loading people list:", err);
-    approverSelect.innerHTML = '<option disabled selected>Unable to load contacts</option>';
-  }
+  modal.show();
 }
 
