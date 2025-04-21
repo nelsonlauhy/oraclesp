@@ -149,7 +149,14 @@ async function loadFiles(driveId, folderId = "root") {
       a.innerHTML = `
         <div class="file-row">
           <div class="file-name">
-            <button class="btn btn-sm btn-add-lightgrey me-2" onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})"><i class="bi bi-plus-lg"></i></button>
+            <button class="btn btn-sm btn-add-lightgrey me-1" title="Send as Email Attachment"
+              onclick="event.preventDefault(); addFileToSelection('${item.id}', '${driveId}', '${item.name}', ${item.size || 0})">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            <button class="btn btn-sm btn-add-lightgrey me-2" title="Request Document Approval"
+              onclick="event.preventDefault(); openApprovalModal('${item.id}', '${driveId}', '${item.name}')">
+              <i class="bi bi-check-lg"></i>
+            </button>
             <i class="bi ${icon} me-2"></i>${item.name}
           </div>
         </div>
@@ -333,3 +340,9 @@ async function downloadFileAsBase64(driveId, itemId) {
     reader.readAsDataURL(blob);
   });
 }
+
+function openApprovalModal(itemId, driveId, name) {
+  alert(`📝 Approval flow not yet implemented.\n\nFile: ${name}\nID: ${itemId}\nDrive: ${driveId}`);
+  // Next: Implement modal to select approver and send request
+}
+
