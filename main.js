@@ -349,11 +349,6 @@ async function downloadFileAsBase64(driveId, itemId) {
   });
 }
 
-function openApprovalModal(itemId, driveId, name) {
-  alert(`📝 Approval flow not yet implemented.\n\nFile: ${name}\nID: ${itemId}\nDrive: ${driveId}`);
-  // Next: Implement modal to select approver and send request
-}
-
 async function openApprovalModal(itemId, driveId, fileName) {
   const modal = new bootstrap.Modal(document.getElementById('approvalModal'));
   const approverSelect = document.getElementById('approverSelect');
@@ -363,23 +358,23 @@ async function openApprovalModal(itemId, driveId, fileName) {
   approverSelect.innerHTML = '<option disabled selected>Loading approvers...</option>';
   confirmBtn.disabled = true;
 
-  // Load users from Microsoft Graph
   try {
-    const res = await fetch("https://graph.microsoft.com/v1.0/users?$filter=accountEnabled eq true&$select=displayName,mail", {
+    // ✅ Simplified query without $filter
+    const res = await fetch("https://graph.microsoft.com/v1.0/users?$select=displayName,mail&$top=50", {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const data = await res.json();
+    console.log("User list response:", data);
 
-    // Populate dropdown
-    approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
-
+    // Validate response
     if (!data || !data.value || data.value.length === 0) {
       approverSelect.innerHTML = '<option disabled selected>No users found</option>';
       return;
     }
-    
+
+    // Populate dropdown
+    approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
     data.value.forEach(user => {
-    
       if (user.mail) {
         const option = document.createElement("option");
         option.value = user.mail;
@@ -392,10 +387,9 @@ async function openApprovalModal(itemId, driveId, fileName) {
       confirmBtn.disabled = false;
     };
 
-    // TODO: handle confirmApprovalBtn click later
     modal.show();
   } catch (err) {
-    approverSelect.innerHTML = '<option disabled selected>Unable to load users</option>';
     console.error("Error loading user list:", err);
+    approverSelect.innerHTML = '<option disabled selected>Unable to load users</option>';
   }
 }
