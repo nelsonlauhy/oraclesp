@@ -15,6 +15,10 @@ let currentFolderId = null;
 let breadcrumb = [];
 let selectedFileItems = [];
 
+// Site & Library info for approval
+const approvalSiteId = "oraclegrouprealty.sharepoint.com,c5ba3f80-5bf7-43f6-9a12-10ca25d7605e,41f63e3f-fb91-4081-abd0-c33900b4ee9a";
+let approvalDriveId = null;
+
 window.onload = async () => {
   const currentAccounts = msalInstance.getAllAccounts();
   if (currentAccounts.length > 0) {
