@@ -433,7 +433,8 @@ confirmBtn.onclick = async () => {
   const uploaded = await uploadRes.json();
 
   if (!uploadRes.ok) {
-    console.error("Upload failed:", uploaded);
+    console.error("Upload failed:", JSON.stringify(uploaded, null, 2));
+    alert("❌ Upload failed. See console for details.");
     alert("❌ Failed to upload the file to the Document Approval library.");
     return;
   }
