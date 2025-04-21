@@ -126,17 +126,25 @@
           Folder and File List
         </div>
         
-        <small class="d-block mt-2 ms-1" style="color: #555;">
-          <button class="btn btn-sm btn-add-lightgrey px-1 py-0 me-1" style="font-size: 0.7rem; pointer-events: none;">
-            <i class="bi bi-plus-lg"></i>
-          </button>
-          Click this button to add file(s) as email attachment, then click <strong>Submit</strong> to create an email draft in your mailbox.<br />
-        
-          <button class="btn btn-sm btn-add-lightgrey px-1 py-0 me-1 mt-1" style="font-size: 0.7rem; pointer-events: none;">
-            <i class="bi bi-check-lg"></i>
-          </button>
-          Click this button to initiate a document approval request for internal staff review and signature.
-        </small>
+        <!-- Toggle button -->
+        <button class="btn btn-link btn-sm ms-1 mb-1 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#featureDescription" aria-expanded="false" aria-controls="featureDescription">
+          ❓ Features Guide
+        </button>
+
+        <!-- Collapsible description -->
+        <div class="collapse" id="featureDescription">
+          <small class="d-block ms-1 mb-2" style="color: #555;">
+            <button class="btn btn-sm btn-add-lightgrey px-1 py-0 me-1" style="font-size: 0.7rem; pointer-events: none;">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+            Click this button to add file(s) as email attachment, then click <strong>Submit</strong> to create an email draft in your mailbox.<br />
+
+            <button class="btn btn-sm btn-add-lightgrey px-1 py-0 me-1 mt-1" style="font-size: 0.7rem; pointer-events: none;">
+              <i class="bi bi-check-lg"></i>
+            </button>
+            Click this button to initiate a document approval request for internal staff review and signature.
+          </small>
+        </div>
 
         <!-- Breadcrumb -->
         <!-- <nav aria-label="breadcrumb" class="mb-1 border p-2 rounded"> -->
