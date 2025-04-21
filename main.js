@@ -442,7 +442,7 @@ confirmBtn.onclick = async () => {
   const uploadedId = uploaded.id;
 
   // Step 4: Update fields with metadata
-  await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/items/${uploadedId}/fields`, {
+  await fetch(`https://graph.microsoft.com/v1.0/drives/${approvalDriveId}/items/${uploadedId}/listItem/fields`, {
     method: "PATCH",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -456,6 +456,7 @@ confirmBtn.onclick = async () => {
       "Approval Status": "Open"
     })
   });
+  
 
   alert("✅ Approval request sent and file uploaded.");
   bootstrap.Modal.getInstance(document.getElementById("approvalModal")).hide();
