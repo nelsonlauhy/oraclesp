@@ -354,42 +354,45 @@ async function openApprovalModal(itemId, driveId, fileName) {
   const approverSelect = document.getElementById('approverSelect');
   const confirmBtn = document.getElementById('confirmApprovalBtn');
 
-  // Reset state
-  approverSelect.innerHTML = '<option disabled selected>Loading approvers...</option>';
+  // Reset dropdown and button
+  approverSelect.innerHTML = '<option disabled selected>Loading recent contacts...</option>';
   confirmBtn.disabled = true;
 
   try {
-    // ✅ Simplified query without $filter
-    const res = await fetch("https://graph.microsoft.com/v1.0/users?$select=displayName,mail&$top=50", {
+    // ✅ Use /me/people instead of /users
+    const res = await fetch("https://graph.microsoft.com/v1.0/me/people?$select=displayName,emailAddresses&$top=20", {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
-    const data = await res.json();
-    console.log("User list response:", data);
 
-    // Validate response
+    const data = await res.json();
+    console.log("People response:", data);
+
     if (!data || !data.value || data.value.length === 0) {
-      approverSelect.innerHTML = '<option disabled selected>No users found</option>';
+      approverSelect.innerHTML = '<option disabled selected>No contacts found</option>';
       return;
     }
 
-    // Populate dropdown
+    // Build dropdown
     approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
-    data.value.forEach(user => {
-      if (user.mail) {
+    data.value.forEach(person => {
+      const email = person.emailAddresses?.[0]?.address;
+      if (email) {
         const option = document.createElement("option");
-        option.value = user.mail;
-        option.textContent = `${user.displayName} (${user.mail})`;
+        option.value = email;
+        option.textContent = `${person.displayName} (${email})`;
         approverSelect.appendChild(option);
       }
     });
 
+    // Enable button only when a valid selection is made
     approverSelect.onchange = () => {
       confirmBtn.disabled = false;
     };
 
     modal.show();
   } catch (err) {
-    console.error("Error loading user list:", err);
-    approverSelect.innerHTML = '<option disabled selected>Unable to load users</option>';
+    console.error("Error loading people list:", err);
+    approverSelect.innerHTML = '<option disabled selected>Unable to load contacts</option>';
   }
 }
+
