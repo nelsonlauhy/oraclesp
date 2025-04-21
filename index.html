@@ -201,6 +201,8 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <p class="mb-2 text-muted small" id="approvalFileName"></p>
+        
           <div class="mb-3">
             <label for="approverSelect" class="form-label">Select Approver</label>
             <select class="form-select" id="approverSelect">
@@ -209,6 +211,7 @@
           </div>
           <div class="form-text">This person will receive the document and can approve or reject it.</div>
         </div>
+        
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
           <button type="button" class="btn btn-primary" id="confirmApprovalBtn" disabled>Send Approval Request</button>

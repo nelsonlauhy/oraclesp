@@ -354,6 +354,8 @@ async function openApprovalModal(itemId, driveId, fileName) {
   const approverSelect = document.getElementById('approverSelect');
   const confirmBtn = document.getElementById('confirmApprovalBtn');
 
+  document.getElementById("approvalFileName").textContent = `📄 You are requesting approval for: "${fileName}"`;
+
   // Reset dropdown and button
   approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
   confirmBtn.disabled = true;
