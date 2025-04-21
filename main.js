@@ -153,6 +153,7 @@ async function loadFiles(driveId, folderId = "root") {
             onclick="event.preventDefault(); openApprovalModal('${item.id}', '${driveId}', '${item.name}')">
             <i class="bi bi-check-lg"></i>
           </button>`;
+
       }
 
       a.innerHTML = `
@@ -371,7 +372,14 @@ async function openApprovalModal(itemId, driveId, fileName) {
 
     // Populate dropdown
     approverSelect.innerHTML = '<option disabled selected>Select an approver</option>';
+
+    if (!data || !data.value || data.value.length === 0) {
+      approverSelect.innerHTML = '<option disabled selected>No users found</option>';
+      return;
+    }
+    
     data.value.forEach(user => {
+    
       if (user.mail) {
         const option = document.createElement("option");
         option.value = user.mail;
