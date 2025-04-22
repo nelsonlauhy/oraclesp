@@ -457,11 +457,11 @@ confirmBtn.onclick = async () => {
       ApproverEmail: approverSelect.value,
       Request_x0020_Date: new Date().toISOString(),
       Approval_x0020_Status: "Open",
-      _ExtendedDescription: description  
+      _ExtendedDescription: description,
+      DriveId: file.driveId,   // ✅ Include for backend reference
+      ItemId: file.itemId      // ✅ Include for backend reference
     })
   });
-  
-  
 
   alert("✅ Approval request sent and file uploaded.");
   bootstrap.Modal.getInstance(document.getElementById("approvalModal")).hide();
