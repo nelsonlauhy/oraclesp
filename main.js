@@ -337,7 +337,8 @@ async function createDraftEmailWithAttachments() {
 }
 
 async function downloadFileAsBase64(driveId, itemId) {
-  const response = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${itemId}/content`, {
+  const encodedItemId = encodeURIComponent(itemId);
+  const response = await fetch(`https://graph.microsoft.com/v1.0/drives/${driveId}/items/${encodedItemId}/content`, {
     headers: { Authorization: `Bearer ${accessToken}` }
   });
 
