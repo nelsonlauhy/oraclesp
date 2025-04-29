@@ -66,6 +66,7 @@ function updateUIAfterLogin(account) {
   document.getElementById("welcomeMessage").style.display = "none";
   document.getElementById("userStatus").style.display = "inline-block";
   document.getElementById("userStatus").textContent = `✅ Signed in as ${account.username}`;
+  document.getElementById("siteLibrarySelectors").style.display = "flex";
 }
 
 async function loadLibraries() {
