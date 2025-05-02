@@ -92,6 +92,8 @@ async function loadLibraries() {
 
     const sortedLibraries = data.value.sort((a, b) => a.name.localeCompare(b.name));
     sortedLibraries.forEach(lib => {
+      if (lib.name === "Documents") return; //Skip Documents Library
+
       const option = document.createElement("option");
       option.value = lib.id;
       option.textContent = lib.name;
