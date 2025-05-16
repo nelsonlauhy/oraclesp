@@ -377,7 +377,8 @@ async function openApprovalModal(itemId, driveId, fileName) {
     { displayName: "Jason Garland", email: "jasong@oraclegr.com" },
     { displayName: "Joanna Jiawen Xie", email: "joannax@oraclegr.com" },
     { displayName: "Sabrina Rollock", email: "sabrinar@oraclegr.com" },
-    { displayName: "Nelson Lau", email: "itadmin@oraclegr.com" }
+    { displayName: "Nelson Lau", email: "itadmin@oraclegr.com" },
+    { displayName: "IT Support", email: "itsupport@livingrealtykw.com" }
   ];
 
   approvers.forEach(person => {
