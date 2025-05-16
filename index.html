@@ -100,6 +100,12 @@
       <!-- Get Site ID: https://developer.microsoft.com/en-us/graph/graph-explorer -->
       <!-- Query: GET https://graph.microsoft.com/v1.0/sites/oraclegrouprealty.sharepoint.com:/sites/ITSite -->
       <div  id="siteLibrarySelectors" class="d-flex gap-3 mb-2" style="display: none;">
+
+      </div>
+
+      <!-- Line Separator -->
+      <hr class="my-3" />
+      <div id="mainContentSection" class="d-none">
         <div class="flex-grow-1">
           <!-- <label for="siteSelect" class="form-label">Select a SharePoint Site</label> -->
           <select class="form-select" id="siteSelect">
@@ -122,12 +128,6 @@
             <option selected disabled>Select a site first</option>
           </select>
         </div>
-      </div>
-
-      <!-- Line Separator -->
-      <hr class="my-3" />
-      <div id="mainContentSection" class="d-none">
-
         
         <!-- Toggle button -->
         <button class="btn btn-link btn-sm ms-1 mb-1 text-decoration-none" type="button" data-bs-toggle="collapse" data-bs-target="#featureDescription" aria-expanded="false" aria-controls="featureDescription">
