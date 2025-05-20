@@ -60,15 +60,42 @@
           return;
         }
 
-        let listHTML = '<ul class="list-group">';
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          console.log("📄 Document:", doc.id, data);
+        let listHTML = `
+        <table class="table table-bordered">
+            <thead class="table-light">
+            <tr>
+                <th>Document Name</th>
+                <th>Requester</th>
+                <th>Request Date</th>
+            </tr>
+            </thead>
+            <tbody>
+        `;
 
-          const fileName = doc.id;
-          listHTML += `<li class="list-group-item">${fileName}</li>`;
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const fileName = doc.id;
+            const requester = data?.RequesterFullName || "Unknown";
+
+            // Format date
+            let requestDate = "—";
+            if (data?.RecordCreateDate?.toDate) {
+                const d = data.RecordCreateDate.toDate();
+                requestDate = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}`;
+            }
+
+            listHTML += `
+                <tr>
+                <td>${fileName}</td>
+                <td>${requester}</td>
+                <td>${requestDate}</td>
+                </tr>
+            `;
         });
-        listHTML += '</ul>';
+
+        listHTML += '</tbody></table>';
+        document.getElementById("content").innerHTML = listHTML;
+
 
         contentDiv.innerHTML = listHTML;
       } catch (err) {
