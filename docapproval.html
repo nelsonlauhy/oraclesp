@@ -42,7 +42,7 @@
       const q = query(
         collection(db, "doclist"),
         where("ApproverEmail", "==", email),
-        where("ApprovalStatus", "==", "Pending for Approval")
+        where("ApprovalStatus", "==", "Pending for approval")
       );
 
       const querySnapshot = await getDocs(q);
