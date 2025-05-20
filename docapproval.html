@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pending Approvals</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  >
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Get email from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+
+    if (!email) {
+      document.getElementById("content").innerHTML = `<div class="alert alert-danger">Missing email parameter.</div>`;
+      throw new Error("Missing email parameter.");
+    }
+
+    // Firebase config
+    const firebaseConfig = {
+      apiKey: "AIzaSyALkCr_VhPMgF8lUGkZdquF7fRHRQMR-bg",
+      authDomain: "oraclesp-7295a.firebaseapp.com",
+      projectId: "oraclesp-7295a",
+      storageBucket: "oraclesp-7295a.firebasestorage.app",
+      messagingSenderId: "412945353914",
+      appId: "1:412945353914:web:16df873fba99d63d3c0683",
+      measurementId: "G-1536B515RY"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Fetch and display documents
+    async function loadApprovals() {
+      const q = query(
+        collection(db, "DocumentApproval"),
+        where("ApproverEmail", "==", email),
+        where("ApprovalStatus", "==", "Pending for Approval")
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      if (querySnapshot.empty) {
+        document.getElementById("content").innerHTML = `<div class="alert alert-info">No pending documents for ${email}.</div>`;
+        return;
+      }
+
+      let listHTML = '<ul class="list-group">';
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const fileName = data?.Name || "Untitled Document";
+        listHTML += `<li class="list-group-item">${fileName}</li>`;
+      });
+      listHTML += '</ul>';
+
+      document.getElementById("content").innerHTML = listHTML;
+    }
+
+    window.addEventListener("DOMContentLoaded", loadApprovals);
+  </script>
+</head>
+<body>
+  <div class="container my-5">
+    <h3 class="mb-4">Pending Document Approvals</h3>
+    <div id="content">
+      <div class="text-muted">Loading pending approvals...</div>
+    </div>
+  </div>
+</body>
+</html>
