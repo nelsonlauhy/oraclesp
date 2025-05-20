@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pending Approvals</title>
+  <title>Pending Document Approvals</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
   <link
@@ -40,7 +40,7 @@
     // Fetch and display documents
     async function loadApprovals() {
       const q = query(
-        collection(db, "DocumentApproval"),
+        collection(db, "doclist"),
         where("ApproverEmail", "==", email),
         where("ApprovalStatus", "==", "Pending for Approval")
       );
@@ -48,7 +48,7 @@
       const querySnapshot = await getDocs(q);
 
       if (querySnapshot.empty) {
-        document.getElementById("content").innerHTML = `<div class="alert alert-info">No pending documents for ${email}.</div>`;
+        document.getElementById("content").innerHTML = `<div class="alert alert-info">No pending documents for <strong>${email}</strong>.</div>`;
         return;
       }
 
