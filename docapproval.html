@@ -47,7 +47,7 @@
       try {
         const q = query(
           collection(db, "doclist"),
-          
+          where("ApproverEmail", "==", email),
           where("ApprovalStatus", "==", "Pending for approval")
         );
 
