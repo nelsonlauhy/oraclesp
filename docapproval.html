@@ -65,7 +65,7 @@
           const data = doc.data();
           console.log("📄 Document:", doc.id, data);
 
-          const fileName = data?.Name || "Untitled Document";
+          const fileName = doc.id;
           listHTML += `<li class="list-group-item">${fileName}</li>`;
         });
         listHTML += '</ul>';
