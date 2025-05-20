@@ -14,14 +14,18 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Get email from URL
+    // Parse and normalize email from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get('email');
+    const email = urlParams.get('email')?.trim().toLowerCase();
+
+    const contentDiv = document.getElementById("content");
 
     if (!email) {
-      document.getElementById("content").innerHTML = `<div class="alert alert-danger">Missing email parameter.</div>`;
+      contentDiv.innerHTML = `<div class="alert alert-danger">Missing email parameter.</div>`;
       throw new Error("Missing email parameter.");
     }
+
+    console.log("🔍 Email from URL:", email);
 
     // Firebase config
     const firebaseConfig = {
@@ -37,30 +41,40 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // Fetch and display documents
     async function loadApprovals() {
-      const q = query(
-        collection(db, "doclist"),
-        where("ApproverEmail", "==", email),
-        where("ApprovalStatus", "==", "Pending for approval")
-      );
+      console.log("📡 Running Firestore query...");
 
-      const querySnapshot = await getDocs(q);
+      try {
+        const q = query(
+          collection(db, "doclist"),
+          where("ApproverEmail", "==", email),
+          where("ApprovalStatus", "==", "Pending for approval")
+        );
 
-      if (querySnapshot.empty) {
-        document.getElementById("content").innerHTML = `<div class="alert alert-info">No pending documents for <strong>${email}</strong>.</div>`;
-        return;
+        const querySnapshot = await getDocs(q);
+
+        console.log("✅ Query completed. Documents found:", querySnapshot.size);
+
+        if (querySnapshot.empty) {
+          contentDiv.innerHTML = `<div class="alert alert-info">No pending documents for <strong>${email}</strong>.</div>`;
+          return;
+        }
+
+        let listHTML = '<ul class="list-group">';
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          console.log("📄 Document:", doc.id, data);
+
+          const fileName = data?.Name || "Untitled Document";
+          listHTML += `<li class="list-group-item">${fileName}</li>`;
+        });
+        listHTML += '</ul>';
+
+        contentDiv.innerHTML = listHTML;
+      } catch (err) {
+        console.error("❌ Firestore query error:", err);
+        contentDiv.innerHTML = `<div class="alert alert-danger">Error loading data. Please try again later.</div>`;
       }
-
-      let listHTML = '<ul class="list-group">';
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        const fileName = data?.Name || "Untitled Document";
-        listHTML += `<li class="list-group-item">${fileName}</li>`;
-      });
-      listHTML += '</ul>';
-
-      document.getElementById("content").innerHTML = listHTML;
     }
 
     window.addEventListener("DOMContentLoaded", loadApprovals);
