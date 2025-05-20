@@ -1,23 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Pending Document Approvals</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Bootstrap CSS -->
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
     rel="stylesheet"
-  >
-  <!-- Firebase SDK -->
+  />
+</head>
+<body>
+  <div class="container my-5">
+    <h3 class="mb-4">Pending Document Approvals</h3>
+    <div id="content">
+      <div class="text-muted">Loading pending approvals...</div>
+    </div>
+  </div>
+
+  <!-- PDF Preview Modal -->
+  <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pdfModalLabel">PDF Preview</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <iframe id="pdfViewer" src="" width="100%" height="600px" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Firebase + App Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Parse and normalize email from URL
+    // Get email from URL
     const urlParams = new URLSearchParams(window.location.search);
     const email = urlParams.get('email')?.trim().toLowerCase();
-
     const contentDiv = document.getElementById("content");
 
     if (!email) {
@@ -25,14 +51,14 @@
       throw new Error("Missing email parameter.");
     }
 
-    console.log("🔍 Email from URL:", email);
+    console.log("🔍 Email:", email);
 
     // Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyALkCr_VhPMgF8lUGkZdquF7fRHRQMR-bg",
       authDomain: "oraclesp-7295a.firebaseapp.com",
       projectId: "oraclesp-7295a",
-      storageBucket: "oraclesp-7295a.firebasestorage.app",
+      storageBucket: "oraclesp-7295a.appspot.com",
       messagingSenderId: "412945353914",
       appId: "1:412945353914:web:16df873fba99d63d3c0683",
       measurementId: "G-1536B515RY"
@@ -42,8 +68,6 @@
     const db = getFirestore(app);
 
     async function loadApprovals() {
-      console.log("📡 Running Firestore query...");
-
       try {
         const q = query(
           collection(db, "doclist"),
@@ -52,8 +76,7 @@
         );
 
         const querySnapshot = await getDocs(q);
-
-        console.log("✅ Query completed. Documents found:", querySnapshot.size);
+        console.log("📂 Records found:", querySnapshot.size);
 
         if (querySnapshot.empty) {
           contentDiv.innerHTML = `<div class="alert alert-info">No pending documents for <strong>${email}</strong>.</div>`;
@@ -61,42 +84,44 @@
         }
 
         let listHTML = `
-        <table class="table table-bordered">
+          <table class="table table-bordered">
             <thead class="table-light">
-            <tr>
+              <tr>
                 <th>Document Name</th>
                 <th>Requester</th>
                 <th>Request Date</th>
-            </tr>
+              </tr>
             </thead>
             <tbody>
         `;
 
         querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            const fileName = doc.id;
-            const requester = data?.RequesterFullName || "Unknown";
+          const data = doc.data();
+          const fileName = doc.id;
+          const requester = data?.RequesterFullName || "Unknown";
 
-            // Format date
-            let requestDate = "—";
-            if (data?.RecordCreateDate?.toDate) {
-                const d = data.RecordCreateDate.toDate();
-                requestDate = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}`;
-            }
+          let requestDate = "—";
+          if (data?.RecordCreateDate?.toDate) {
+            const d = data.RecordCreateDate.toDate();
+            requestDate = `${d.getFullYear()}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getDate().toString().padStart(2, '0')}`;
+          }
 
-            listHTML += `
-                <tr>
-                <td>${fileName}</td>
-                <td>${requester}</td>
-                <td>${requestDate}</td>
-                </tr>
-            `;
+          const pdfUrl = `https://storage.googleapis.com/oraclesp-7295a.appspot.com/pendingapproval/${fileName}`;
+
+          listHTML += `
+            <tr>
+              <td>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#pdfModal" onclick="openPdf('${pdfUrl}', '${fileName}')">
+                  ${fileName}
+                </a>
+              </td>
+              <td>${requester}</td>
+              <td>${requestDate}</td>
+            </tr>
+          `;
         });
 
         listHTML += '</tbody></table>';
-        document.getElementById("content").innerHTML = listHTML;
-
-
         contentDiv.innerHTML = listHTML;
       } catch (err) {
         console.error("❌ Firestore query error:", err);
@@ -104,15 +129,13 @@
       }
     }
 
+    // PDF modal loader
+    window.openPdf = function (url, title) {
+      document.getElementById("pdfViewer").src = url;
+      document.getElementById("pdfModalLabel").textContent = title;
+    };
+
     window.addEventListener("DOMContentLoaded", loadApprovals);
   </script>
-</head>
-<body>
-  <div class="container my-5">
-    <h3 class="mb-4">Pending Document Approvals</h3>
-    <div id="content">
-      <div class="text-muted">Loading pending approvals...</div>
-    </div>
-  </div>
 </body>
 </html>
